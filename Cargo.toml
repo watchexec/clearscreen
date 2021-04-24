@@ -1,0 +1,28 @@
+[package]
+name = "clearscreen"
+version = "0.0.0"
+
+authors = ["Félix Saparelli <felix@passcod.name>"]
+license = "Apache-2.0 OR MIT"
+description = "Cross-platform terminal screen clearing"
+keywords = ["clear", "cls", "cli", "terminal"]
+
+documentation = "https://github.com/watchexec/clearscreen"
+homepage = "https://github.com/watchexec/clearscreen"
+repository = "https://github.com/watchexec/clearscreen"
+readme = "README.md"
+
+edition = "2018"
+exclude = ["/bin", "/.github"]
+
+[dependencies]
+log = "0.4.14"
+terminfo = "0.7.3"
+thiserror = "1.0.24"
+
+[target.'cfg(unix)'.dependencies.nix]
+version = "0.20.0"
+
+[target.'cfg(windows)'.dependencies.winapi]
+version = "0.3.9"
+features = ["consoleapi", "errhandlingapi", "processenv", "winbase", "wincon"]
