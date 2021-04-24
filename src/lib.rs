@@ -521,6 +521,10 @@ pub enum Error {
 	/// A missing terminfo capability.
 	#[error("required terminfo capability not available: {0}")]
 	TerminfoCap(&'static str),
+
+	/// A null-pointer error.
+	#[error("encountered a null pointer while reading {0}")]
+	NullPtr(&'static str),
 }
 
 #[cfg(unix)]
@@ -596,20 +600,173 @@ mod unix {
 mod win {
 	use super::Error;
 
+	use std::{convert::TryFrom, io, ptr};
+
+	use winapi::{
+		shared::minwindef::{DWORD, FALSE},
+		um::{
+			consoleapi::{GetConsoleMode, SetConsoleMode},
+			handleapi::INVALID_HANDLE_VALUE,
+			processenv::GetStdHandle,
+			winbase::STD_OUTPUT_HANDLE,
+			wincon::{
+				FillConsoleOutputCharacterW, GetConsoleScreenBufferInfo,
+				ScrollConsoleScreenBufferW, SetConsoleCursorPosition,
+				FillConsoleOutputAttribute,
+				CONSOLE_SCREEN_BUFFER_INFO, ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT,
+				ENABLE_PROCESSED_INPUT, ENABLE_VIRTUAL_TERMINAL_PROCESSING,
+				PCONSOLE_SCREEN_BUFFER_INFO,
+			},
+			wincontypes::{CHAR_INFO_Char, CHAR_INFO, COORD, SMALL_RECT},
+			winnt::{HANDLE, SHORT},
+		},
+	};
+
+	fn console_handle() -> Result<HANDLE, Error> {
+		match unsafe { GetStdHandle(STD_OUTPUT_HANDLE) } {
+			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
+			handle => Ok(handle),
+		}
+	}
+
+	fn buffer_info(console: HANDLE) -> Result<CONSOLE_SCREEN_BUFFER_INFO, Error> {
+		let csbi: PCONSOLE_SCREEN_BUFFER_INFO = ptr::null_mut();
+		if unsafe { GetConsoleScreenBufferInfo(console, csbi) } == FALSE {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		if csbi.is_null() {
+			Err(Error::NullPtr("GetConsoleScreenBufferInfo"))
+		} else {
+			Ok(unsafe { ptr::read(csbi) })
+		}
+	}
+
 	pub(crate) fn vt() -> Result<(), Error> {
-		todo!()
+		let stdout = console_handle()?;
+
+		let mut mode = 0;
+		if unsafe { GetConsoleMode(stdout, &mut mode) } == FALSE {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+		if unsafe { SetConsoleMode(stdout, mode) } == FALSE {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		Ok(())
 	}
 
+	// Ref https://docs.microsoft.com/en-us/windows/console/clearing-the-screen#example-2
 	pub(crate) fn clear() -> Result<(), Error> {
-		todo!()
+		let console = console_handle()?;
+		let csbi = buffer_info(console)?;
+
+		// Scroll the rectangle of the entire buffer.
+		let rect = SMALL_RECT {
+			Left: 0,
+			Top: 0,
+			Right: csbi.dwSize.X,
+			Bottom: csbi.dwSize.Y,
+		};
+
+		// Scroll it upwards off the top of the buffer with a magnitude of the entire height.
+		let target = COORD {
+			X: 0,
+			Y: (0 - csbi.dwSize.Y) as SHORT,
+		};
+
+		// Fill with empty spaces with the buffer’s default text attribute.
+		let mut space = CHAR_INFO_Char::default();
+		unsafe { *space.AsciiChar_mut() = b' ' as i8 };
+
+		let fill = CHAR_INFO {
+			Char: space,
+			Attributes: csbi.wAttributes,
+		};
+
+		// Do the scroll.
+		if unsafe { ScrollConsoleScreenBufferW(console, &rect, ptr::null(), target, &fill) }
+			== FALSE
+		{
+			return Err(io::Error::last_os_error().into());
+		}
+
+		// Move the cursor to the top left corner too.
+		let mut cursor = csbi.dwCursorPosition;
+		cursor.X = 0;
+		cursor.Y = 0;
+
+		if unsafe { SetConsoleCursorPosition(console, cursor) } == FALSE {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		Ok(())
 	}
 
+	// Ref https://docs.microsoft.com/en-us/windows/console/clearing-the-screen#example-3
 	pub(crate) fn blank() -> Result<(), Error> {
-		todo!()
+		let console = console_handle()?;
+
+		// Fill the entire screen with blanks.
+		let csbi = buffer_info(console)?;
+
+		let buffer_size = csbi.dwSize.X * csbi.dwSize.Y;
+		let home_coord = COORD { X: 0, Y: 0 };
+
+		if FALSE
+			== unsafe {
+				FillConsoleOutputCharacterW(
+					console,
+					b' ' as u16,
+					u32::try_from(buffer_size).unwrap_or(0),
+					home_coord,
+					ptr::null_mut(),
+				)
+			} {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		// Set the buffer's attributes accordingly.
+		let csbi = buffer_info(console)?;
+		if FALSE
+			== unsafe {
+				FillConsoleOutputAttribute(
+					console,
+					csbi.wAttributes,
+					u32::try_from(buffer_size).unwrap_or(0),
+					home_coord,
+					ptr::null_mut(),
+				)
+			} {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		// Put the cursor at its home coordinates.
+		if unsafe { SetConsoleCursorPosition(console, home_coord) } == FALSE {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		Ok(())
 	}
+
+	const ENABLE_COOKED_MODE: DWORD = ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT;
 
 	pub(crate) fn cooked() -> Result<(), Error> {
-		todo!()
+		let stdout = console_handle()?;
+
+		let mut mode = 0;
+		if unsafe { GetConsoleMode(stdout, &mut mode) } == FALSE {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		mode |= ENABLE_COOKED_MODE;
+		if unsafe { SetConsoleMode(stdout, mode) } == FALSE {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		Ok(())
 	}
 }
 

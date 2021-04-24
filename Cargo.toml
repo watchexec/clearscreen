@@ -25,4 +25,12 @@ version = "0.20.0"
 
 [target.'cfg(windows)'.dependencies.winapi]
 version = "0.3.9"
-features = ["consoleapi", "errhandlingapi", "processenv", "winbase", "wincon"]
+features = [
+	"consoleapi",
+	"errhandlingapi",
+	"handleapi",
+	"impl-default",
+	"processenv",
+	"winbase",
+	"wincon",
+]
