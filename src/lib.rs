@@ -19,11 +19,16 @@
 #![warn(missing_docs)]
 
 use std::{
+	borrow::Cow,
 	io::{self, Write},
 	process::{Command, ExitStatus},
 };
 
-use terminfo::{capability, expand::Context, Database};
+use terminfo::{
+	capability::{self, Expansion},
+	expand::{Context, Parameter},
+	Capability, Database, Value,
+};
 use thiserror::Error;
 
 /// Ways to clear the screen.
@@ -338,7 +343,7 @@ impl ClearScreen {
 					return Err(Error::TerminfoCap("clear"));
 				}
 
-				if let Some(seq) = info.get::<capability::User3>() {
+				if let Some(seq) = info.get::<ResetScrollback>() {
 					seq.expand().with(&mut ctx).to(w)?;
 				}
 			}
@@ -352,7 +357,7 @@ impl ClearScreen {
 			}
 			Self::TerminfoScrollback => {
 				let info = Database::from_env()?;
-				if let Some(seq) = info.get::<capability::User3>() {
+				if let Some(seq) = info.get::<ResetScrollback>() {
 					seq.expand().to(w)?;
 				} else {
 					return Err(Error::TerminfoCap("E3"));
@@ -641,5 +646,69 @@ mod win {
 
 	pub(crate) fn cooked() -> Result<(), Error> {
 		Ok(())
+	}
+}
+
+#[derive(Eq, PartialEq, Clone, Debug)]
+struct ResetScrollback<'a>(Cow<'a, [u8]>);
+
+impl<'a> Capability<'a> for ResetScrollback<'a> {
+	#[inline]
+	fn name() -> &'static str {
+		"E3"
+	}
+
+	#[inline]
+	fn from(value: Option<&'a Value>) -> Option<Self> {
+		if let Some(&Value::String(ref value)) = value {
+			Some(Self(Cow::Borrowed(value)))
+		} else {
+			None
+		}
+	}
+
+	#[inline]
+	fn into(self) -> Option<Value> {
+		Some(Value::String(match self.0 {
+			Cow::Borrowed(value) => value.into(),
+
+			Cow::Owned(value) => value,
+		}))
+	}
+}
+
+impl<'a, T: AsRef<&'a [u8]>> From<T> for ResetScrollback<'a> {
+	#[inline]
+	fn from(value: T) -> Self {
+		Self(Cow::Borrowed(value.as_ref()))
+	}
+}
+
+impl<'a> AsRef<[u8]> for ResetScrollback<'a> {
+	#[inline]
+	fn as_ref(&self) -> &[u8] {
+		&self.0
+	}
+}
+
+impl<'a> ResetScrollback<'a> {
+	#[inline]
+	fn expand(&self) -> Expansion<Self> {
+		#[allow(dead_code)]
+		struct ExpansionHere<'a, T: 'a + AsRef<[u8]>> {
+			string: &'a T,
+			params: [Parameter; 9],
+			context: Option<&'a mut Context>,
+		}
+
+		let here = ExpansionHere {
+			string: self,
+			params: Default::default(),
+			context: None,
+		};
+
+		// UNSAFE >:( this is iffy af but also the only way to create an Expansion
+		// such that we can add the E3 capability.
+		unsafe { std::mem::transmute(here) }
 	}
 }
