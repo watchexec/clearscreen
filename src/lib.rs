@@ -567,9 +567,9 @@ pub fn is_microsoft_terminal() -> bool {
 ///
 /// To be clear, **this is the proper way to go.** If you are writing an application which uses this
 /// library, or indeed any application targeting Windows at all, you should embed such a manifest
-/// (and take that opportunity to opt-in to long path support, see e.g.
-/// https://github.com/watchexec/watchexec/issues/163). If you are writing a library on top of this
-/// one, it is your responsibility to communicate this requirement to your users.
+/// (and take that opportunity to opt-in to long path support, see e.g. [watchexec#163]). If you are
+/// writing a library on top of this one, it is your responsibility to communicate this requirement
+/// to your users.
 ///
 /// It is important to remark that it is not possible to manifest twice. In plainer words,
 /// **libraries _must not_ embed a manifest** as that will make it impossible for applications which
@@ -583,6 +583,8 @@ pub fn is_microsoft_terminal() -> bool {
 /// on for other purposes, as it makes no guarantees of reliable detection, and its internal
 /// behaviour may change without notice. Additionally, this will always return false if the library
 /// was compiled for a non-Windows target, even if e.g. it’s running under WSL in a Windows 10 host.
+///
+/// [watchexec#163]: https://github.com/watchexec/watchexec/issues/163
 pub fn is_windows_10() -> bool {
 	win::is_windows_10()
 }
