@@ -8,7 +8,7 @@
 //!
 //! 90% of the time, you’ll want to use the convenience short-hand:
 //!
-//! ```
+//! ```no_run
 //! clearscreen::clear().expect("failed to clear screen");
 //! ```
 //!
@@ -58,7 +58,7 @@ use which::which;
 ///
 /// # Example
 ///
-/// ```
+/// ```no_run
 /// # use clearscreen::ClearScreen;
 /// ClearScreen::default().clear().expect("failed to clear the screen");
 /// ```
