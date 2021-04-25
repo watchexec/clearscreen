@@ -335,12 +335,14 @@ impl Default for ClearScreen {
 	///   - or if `TERM` is set and `tput` is available on the `PATH`, [`TputClear`][ClearScreen::TputClear].
 	///   - otherwise, [`Cls`][ClearScreen::Cls], for now (it should be WindowsConsoleClear but I haven’t tested properly on Win 8).
 	/// - otherwise (i.e. this is unix or unix-compatible):
+	///   - if `TERM_PROGRAM=iTerm.app` and `TERM` starts with `xterm`, [`XtermClear`][ClearScreen::XtermClear]
+	///     (iTerm doesn’t have its own terminfo, and uses xterm’s, but the xterm terminfo file on
+	///     macOS doesn’t have the E3 Erase Scrollback entry, even though iTerm supports it).
 	///   - if `TERM` is set, [`Terminfo`][ClearScreen::Terminfo].
-	///   - or if we’re running in the Microsoft Terminal, [`XtermClear`][ClearScreen::XtermClear].
 	///   - otherwise, [`XtermClear`][ClearScreen::XtermClear].
 	fn default() -> Self {
 		if cfg!(windows) {
-			if is_microsoft_terminal() {
+			return if is_microsoft_terminal() {
 				Self::XtermClear
 			} else if is_windows_10() {
 				Self::WindowsVtClear
@@ -350,12 +352,20 @@ impl Default for ClearScreen {
 				Self::TputClear
 			} else {
 				Self::Cls
-			}
-		} else if env::var("TERM").is_ok() {
-			Self::Terminfo
-		} else {
-			Self::XtermClear
+			};
 		}
+
+		if let (Ok(term), Ok(termp)) = (env::var("TERM"), env::var("TERM_PROGRAM")) {
+			if term.starts_with("xterm") && termp == "iTerm.app" {
+				return Self::XtermClear;
+			}
+		}
+
+		if env::var("TERM").is_ok() {
+			return Self::Terminfo;
+		}
+
+		Self::XtermClear
 	}
 }
 
