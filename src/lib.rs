@@ -1,4 +1,4 @@
-//! Cross-platform ter inner: (), input_flags: (), output_flags: (), control_flags: (), local_flags: (), control_chars: ()minal screen clearing.
+//! Cross-platform terminal screen clearing.
 //!
 //! This library provides a set of ways to clear a screen, plus a “best effort” convenience function
 //! to do the right thing most of the time.
@@ -13,6 +13,9 @@
 //! ```
 //!
 //! For anything else, refer to the [`ClearScreen`] enum.
+//!
+//! If you are supporting Windows in any capacity, the [`is_windows_10()`] documentation is
+//! **required reading**.
 
 #![doc(html_favicon_url = "https://raw.githubusercontent.com/watchexec/clearscreen/main/logo.png")]
 #![doc(html_logo_url = "https://raw.githubusercontent.com/watchexec/clearscreen/main/logo.png")]
@@ -555,6 +558,36 @@ pub fn is_microsoft_terminal() -> bool {
 	env::var("WT_SESSION").is_ok()
 }
 
+/// Detects Windows ≥10.
+///
+/// As mentioned in the [`WindowsVt`][ClearScreen::WindowsVt] documentation, Windows 10 from the
+/// Threshold 2 Update in November 2015 supports the `ENABLE_VIRTUAL_TERMINAL_PROCESSING` console
+/// mode bit, which enables VT100/ECMA-48 escape sequence processing in the console. This in turn
+/// makes clearing the console vastly easier and is the recommended mode of operation by Microsoft.
+///
+/// However, detecting Windows ≥10 is not trivial. To mitigate broken programs that incorrectly
+/// perform version shimming, Microsoft has deprecated most ways to obtain the version of Windows by
+/// making the relevant APIs _lie_ unless the calling executable [embeds a manifest that explicitely
+/// opts-in to support Windows 10](https://docs.microsoft.com/en-us/windows/win32/sysinfo/targeting-your-application-at-windows-8-1).
+///
+/// To be clear, **this is the proper way to go.** If you are writing an application which uses this
+/// library, or indeed any application targeting Windows at all, you should embed such a manifest
+/// (and take that opportunity to opt-in to long path support, see e.g.
+/// https://github.com/watchexec/watchexec/issues/163). If you are writing a library on top of this
+/// one, it is your responsibility to communicate this requirement to your users.
+///
+/// It is important to remark that it is not possible to manifest twice. In plainer words,
+/// **libraries _must not_ embed a manifest** as that will make it impossible for applications which
+/// depend on them to embed their own manifest.
+///
+/// This function tries its best to detect Windows ≥10, and specifically, whether the mentioned mode
+/// bit can be used. Critically, it leaves trying to set the bit as feature detection as a last
+/// resort, such that _an error setting the bit_ is not confunded with _the bit not being supported_.
+///
+/// Note that this is only provided to write your own clearscreen logic and _should not_ be relied
+/// on for other purposes, as it makes no guarantees of reliable detection, and its internal
+/// behaviour may change without notice. Additionally, this will always return false if the library
+/// was compiled for a non-Windows target, even if e.g. it’s running under WSL in a Windows 10 host.
 pub fn is_windows_10() -> bool {
 	win::is_windows_10()
 }
@@ -661,15 +694,18 @@ mod unix {
 mod win {
 	use super::Error;
 
-	use std::{convert::TryFrom, io, ptr};
+	use std::{convert::TryFrom, io, mem::size_of, process::Command, ptr};
 
 	use winapi::{
 		shared::minwindef::{DWORD, FALSE},
 		um::{
 			consoleapi::{GetConsoleMode, SetConsoleMode},
 			handleapi::INVALID_HANDLE_VALUE,
+			lmapibuf::{NetApiBufferAllocate, NetApiBufferFree},
+			lmserver::{NetServerGetInfo, MAJOR_VERSION_MASK, SERVER_INFO_101, SV_PLATFORM_ID_NT},
+			lmwksta::{NetWkstaGetInfo, WKSTA_INFO_100},
 			processenv::GetStdHandle,
-			winbase::STD_OUTPUT_HANDLE,
+			winbase::{VerifyVersionInfoW, STD_OUTPUT_HANDLE},
 			wincon::{
 				FillConsoleOutputAttribute, FillConsoleOutputCharacterW,
 				GetConsoleScreenBufferInfo, ScrollConsoleScreenBufferW, SetConsoleCursorPosition,
@@ -678,7 +714,10 @@ mod win {
 				PCONSOLE_SCREEN_BUFFER_INFO,
 			},
 			wincontypes::{CHAR_INFO_Char, CHAR_INFO, COORD, SMALL_RECT},
-			winnt::{HANDLE, SHORT},
+			winnt::{
+				VerSetConditionMask, HANDLE, OSVERSIONINFOEXW, POSVERSIONINFOEXW, SHORT, ULONGLONG,
+				VER_GREATER_EQUAL, VER_MAJORVERSION, VER_MINORVERSION, VER_SERVICEPACKMAJOR,
+			},
 		},
 	};
 
@@ -830,8 +869,164 @@ mod win {
 		Ok(())
 	}
 
+	// I hope someone searches for this one day and gets mad at me for making their life harder.
+	const ABRACADABRA_THRESHOLD: (u8, u8) = (0x0A, 0x00);
+
+	// proper way, requires manifesting
+	#[inline]
+	fn um_verify_version() -> bool {
+		let condition_mask: ULONGLONG = unsafe {
+			VerSetConditionMask(
+				VerSetConditionMask(
+					VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+					VER_MINORVERSION,
+					VER_GREATER_EQUAL,
+				),
+				VER_SERVICEPACKMAJOR,
+				VER_GREATER_EQUAL,
+			)
+		};
+
+		let mut osvi = OSVERSIONINFOEXW {
+			dwMinorVersion: ABRACADABRA_THRESHOLD.1 as _,
+			dwMajorVersion: ABRACADABRA_THRESHOLD.0 as _,
+			wServicePackMajor: 0,
+			..OSVERSIONINFOEXW::default()
+		};
+
+		let ret = unsafe {
+			VerifyVersionInfoW(
+				&mut osvi as POSVERSIONINFOEXW,
+				VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR,
+				condition_mask,
+			)
+		};
+
+		ret != FALSE
+	}
+
+	// querying the local netserver management api?
+	#[inline]
+	fn um_netserver() -> Result<bool, Error> {
+		unsafe {
+			let mut buf = ptr::null_mut();
+			match NetApiBufferAllocate(
+				u32::try_from(size_of::<SERVER_INFO_101>()).unwrap(),
+				&mut buf,
+			) {
+				0 => {}
+				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
+			}
+
+			let ret = match NetServerGetInfo(ptr::null_mut(), 101, buf as _) {
+				0 => {
+					let info: SERVER_INFO_101 = ptr::read(buf as _);
+					let version = info.sv101_version_major | MAJOR_VERSION_MASK;
+
+					// IS it using the same magic version number? who the fuck knows. let's hope so.
+					Ok(info.sv101_platform_id == SV_PLATFORM_ID_NT
+						&& version > ABRACADABRA_THRESHOLD.0 as _)
+				}
+				err => Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
+			};
+
+			// always free, even if the netservergetinfo call fails
+			match NetApiBufferFree(buf) {
+				0 => {}
+				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
+			}
+
+			ret
+		}
+	}
+
+	// querying the local workstation management api?
+	#[inline]
+	fn um_workstation() -> Result<bool, Error> {
+		unsafe {
+			let mut buf = ptr::null_mut();
+			match NetApiBufferAllocate(
+				u32::try_from(size_of::<WKSTA_INFO_100>()).unwrap(),
+				&mut buf,
+			) {
+				0 => {}
+				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
+			}
+
+			let ret = match NetWkstaGetInfo(ptr::null_mut(), 100, buf as _) {
+				0 => {
+					let info: WKSTA_INFO_100 = ptr::read(buf as _);
+
+					// IS it using the same magic version number? who the fuck knows. let's hope so.
+					Ok(info.wki100_platform_id == SV_PLATFORM_ID_NT
+						&& info.wki100_ver_major > ABRACADABRA_THRESHOLD.0 as _)
+				}
+				err => Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
+			};
+
+			// always free, even if the netservergetinfo call fails
+			match NetApiBufferFree(buf) {
+				0 => {}
+				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
+			}
+
+			ret
+		}
+	}
+
+	// check for PackageManagement cmdlet, which was introduced in Win10
+	#[inline]
+	fn pwsh_package_management() -> Result<bool, Error> {
+		Ok(Command::new("powershell.exe")
+			.arg("-Command")
+			.arg("Get-Command -Module PackageManagement")
+			.output()?
+			.status
+			.success())
+	}
+
+	// attempt to set the bit, then undo it
+	fn vt_attempt() -> Result<bool, Error> {
+		let stdout = console_handle()?;
+
+		let mut mode = 0;
+		if unsafe { GetConsoleMode(stdout, &mut mode) } == FALSE {
+			return Err(io::Error::last_os_error().into());
+		}
+
+		let mut support = false;
+
+		let mut newmode = mode;
+		newmode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+		if unsafe { SetConsoleMode(stdout, newmode) } != FALSE {
+			support = true;
+		}
+
+		// reset it to original value, whatever we do
+		unsafe { SetConsoleMode(stdout, mode) };
+
+		Ok(support)
+	}
+
+	#[inline]
 	pub(crate) fn is_windows_10() -> bool {
-		todo!()
+		if um_verify_version() {
+			return true;
+		}
+
+		if um_netserver().unwrap_or(false) {
+			return true;
+		}
+
+		if um_workstation().unwrap_or(false) {
+			return true;
+		}
+
+		if pwsh_package_management().unwrap_or(false) {
+			return true;
+		}
+
+		vt_attempt().unwrap_or(false)
 	}
 }
 
@@ -870,6 +1065,7 @@ mod win {
 		Ok(())
 	}
 
+	#[inline]
 	pub(crate) fn is_windows_10() -> bool {
 		false
 	}
