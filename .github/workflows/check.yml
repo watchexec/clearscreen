@@ -34,7 +34,11 @@ jobs:
         if: matrix.platform != 'windows'
         with:
           command: test
-      - run: cargo test
+      - run: |
+          cargo test --doc
+          cargo test --test win10
+          cargo test --test platformed
+          cargo test --test default
         if: matrix.platform == 'windows'
         shell: powershell
       - uses: actions-rs/cargo@v1
