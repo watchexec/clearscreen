@@ -16,7 +16,7 @@ jobs:
           - windows
           - macos
 
-    name: Check on ${{ matrix.platform }}
+    name: Test on ${{ matrix.platform }}
     runs-on: "${{ matrix.platform }}-latest"
 
     steps:
@@ -30,6 +30,9 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
