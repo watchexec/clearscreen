@@ -332,12 +332,11 @@ impl Default for ClearScreen {
 	///   - if we’re running in the Microsoft Terminal, [`XtermClear`][ClearScreen::XtermClear].
 	///   - or if we’re running in Windows 10, [`WindowsVtClear`][ClearScreen::WindowsVtClear].
 	///   - or if both `TERM` and `TERMINFO` are set, [`Terminfo`][ClearScreen::Terminfo].
-	///   - or if `tput` is available on the `PATH`, [`TputClear`][ClearScreen::TputClear].
+	///   - or if `TERM` is set and `tput` is available on the `PATH`, [`TputClear`][ClearScreen::TputClear].
 	///   - otherwise, [`WindowsConsoleClear`][ClearScreen::WindowsConsoleClear].
 	/// - otherwise (i.e. this is unix or unix-compatible):
 	///   - if `TERM` is set, [`Terminfo`][ClearScreen::Terminfo].
 	///   - or if we’re running in the Microsoft Terminal, [`XtermClear`][ClearScreen::XtermClear].
-	///   - or if `tput` is available on the `PATH`, [`TputClear`][ClearScreen::TputClear].
 	///   - otherwise, [`XtermClear`][ClearScreen::XtermClear].
 	fn default() -> Self {
 		if cfg!(windows) {
@@ -347,17 +346,13 @@ impl Default for ClearScreen {
 				Self::WindowsVtClear
 			} else if env::var("TERM").is_ok() && env::var("TERMINFO").is_ok() {
 				Self::Terminfo
-			} else if which("tput").is_ok() {
+			} else if env::var("TERM").is_ok() && which("tput").is_ok() {
 				Self::TputClear
 			} else {
 				Self::WindowsConsoleClear
 			}
 		} else if env::var("TERM").is_ok() {
 			Self::Terminfo
-		} else if is_microsoft_terminal() {
-			Self::XtermClear
-		} else if which("tput").is_ok() {
-			Self::TputClear
 		} else {
 			Self::XtermClear
 		}
