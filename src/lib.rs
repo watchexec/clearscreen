@@ -508,7 +508,7 @@ impl ClearScreen {
 				}
 			}
 			Self::Cls => {
-				let status = Command::new("cls").status()?;
+				let status = Command::new("cmd.exe").arg("/C").arg("cls").status()?;
 				if !status.success() {
 					return Err(Error::Command("cls", status));
 				}
