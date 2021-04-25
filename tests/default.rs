@@ -1,6 +1,6 @@
 #[test]
 fn default_clear() {
-	let cs = clearscreen::clear();
+	let cs = clearscreen::ClearScreen::default();
 	dbg!(&cs);
-	cs.unwrap();
+	cs.clear().unwrap();
 }
