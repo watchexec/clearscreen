@@ -31,8 +31,12 @@ jobs:
         with:
           command: check
       - uses: actions-rs/cargo@v1
+        if: matrix.platform != 'windows'
         with:
           command: test
+      - run: cargo test
+        if: matrix.platform == 'windows'
+        shell: powershell
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
