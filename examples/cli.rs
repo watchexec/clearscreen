@@ -1,10 +1,11 @@
-use std::{env};
+use std::{env, thread::sleep, time::Duration};
 use clearscreen::ClearScreen;
 use thiserror::Error;
 
 fn main() -> Result<(), Error> {
 	if let Some(variant) = env::args().nth(1) {
 		let cs = match variant.as_str() {
+			"auto" => ClearScreen::default(),
 			"Terminfo" => ClearScreen::Terminfo,
 			"TerminfoScreen" => ClearScreen::TerminfoScreen,
 			"TerminfoScrollback" => ClearScreen::TerminfoScrollback,
@@ -26,11 +27,13 @@ fn main() -> Result<(), Error> {
 			_ => return Err(Error::UnknownVariant(variant))
 		};
 
+		println!("variant = {:?}, sleeping 1 second", cs);
+		sleep(Duration::from_secs(1));
 		cs.clear()?;
 
 		Ok(())
 	} else {
-		println!("Usage: cargo run --example cli -- <variant>\nWhere <variant> is one of the ClearScreen enum variants, same casing.\nI recommend piping into `hexdump -C` to see what’s happening.");
+		println!("Usage: cargo run --example cli -- <variant>\nWhere <variant> is one of the ClearScreen enum variants, same casing, or 'auto'.\nI recommend piping into `hexdump -C` to see what’s happening.");
 		Ok(())
 	}
 }
