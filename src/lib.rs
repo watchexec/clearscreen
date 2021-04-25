@@ -20,6 +20,7 @@
 
 use std::{
 	borrow::Cow,
+	env,
 	io::{self, Write},
 	process::{Command, ExitStatus},
 };
@@ -30,6 +31,7 @@ use terminfo::{
 	Capability, Database, Value,
 };
 use thiserror::Error;
+use which::which;
 
 /// Ways to clear the screen.
 ///
@@ -308,8 +310,54 @@ pub enum ClearScreen {
 }
 
 impl Default for ClearScreen {
+	/// Detects the environment and makes its best guess as how to clear the screen.
+	///
+	/// This function’s behaviour (but not its type signature) may change without notice, as better
+	/// techniques appear. However, it will always strive to provide the best method. It will also
+	/// never have side-effects, and finding any such behaviour should be reported as a bug.
+	///
+	/// If you wish to make your own, the [`is_microsoft_terminal()`] and [`is_windows_10()`]
+	/// functions may be useful.
+	///
+	/// The [`ClearScreen`] variant selected is always in the “clear” behaviour side of things. If
+	/// you wish to only clear the screen and not the scrollback, or to perform a terminal reset, or
+	/// apply the other available clearing strategies, you’ll need to select what’s best yourself.
+	///
+	/// The current behaviour is:
+	///
+	/// - if compiled for windows (`cfg(windows)`):
+	///   - if we’re running in the Microsoft Terminal, [`XtermClear`][ClearScreen::XtermClear].
+	///   - or if we’re running in Windows 10, [`WindowsVtClear`][ClearScreen::WindowsVtClear].
+	///   - or if both `TERM` and `TERMINFO` are set, [`Terminfo`][ClearScreen::Terminfo].
+	///   - or if `tput` is available on the `PATH`, [`TputClear`][ClearScreen::TputClear].
+	///   - otherwise, [`WindowsConsoleClear`][ClearScreen::WindowsConsoleClear].
+	/// - otherwise (i.e. this is unix or unix-compatible):
+	///   - if `TERM` is set, [`Terminfo`][ClearScreen::Terminfo].
+	///   - or if we’re running in the Microsoft Terminal, [`XtermClear`][ClearScreen::XtermClear].
+	///   - or if `tput` is available on the `PATH`, [`TputClear`][ClearScreen::TputClear].
+	///   - otherwise, [`XtermClear`][ClearScreen::XtermClear].
 	fn default() -> Self {
-		todo!()
+		if cfg!(windows) {
+			if is_microsoft_terminal() {
+				Self::XtermClear
+			} else if is_windows_10() {
+				Self::WindowsVtClear
+			} else if env::var("TERM").is_ok() && env::var("TERMINFO").is_ok() {
+				Self::Terminfo
+			} else if which("tput").is_ok() {
+				Self::TputClear
+			} else {
+				Self::WindowsConsoleClear
+			}
+		} else if env::var("TERM").is_ok() {
+			Self::Terminfo
+		} else if is_microsoft_terminal() {
+			Self::XtermClear
+		} else if which("tput").is_ok() {
+			Self::TputClear
+		} else {
+			Self::XtermClear
+		}
 	}
 }
 
@@ -498,6 +546,19 @@ pub fn clear() -> Result<(), Error> {
 	ClearScreen::default().clear()
 }
 
+/// Detects Microsoft Terminal.
+///
+/// Note that this is only provided to write your own clearscreen logic and _should not_ be relied
+/// on for other purposes, as it makes no guarantees of reliable detection, and its internal
+/// behaviour may change without notice.
+pub fn is_microsoft_terminal() -> bool {
+	env::var("WT_SESSION").is_ok()
+}
+
+pub fn is_windows_10() -> bool {
+	win::is_windows_10()
+}
+
 /// Error type.
 #[derive(Debug, Error)]
 pub enum Error {
@@ -610,9 +671,8 @@ mod win {
 			processenv::GetStdHandle,
 			winbase::STD_OUTPUT_HANDLE,
 			wincon::{
-				FillConsoleOutputCharacterW, GetConsoleScreenBufferInfo,
-				ScrollConsoleScreenBufferW, SetConsoleCursorPosition,
-				FillConsoleOutputAttribute,
+				FillConsoleOutputAttribute, FillConsoleOutputCharacterW,
+				GetConsoleScreenBufferInfo, ScrollConsoleScreenBufferW, SetConsoleCursorPosition,
 				CONSOLE_SCREEN_BUFFER_INFO, ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT,
 				ENABLE_PROCESSED_INPUT, ENABLE_VIRTUAL_TERMINAL_PROCESSING,
 				PCONSOLE_SCREEN_BUFFER_INFO,
@@ -751,7 +811,8 @@ mod win {
 		Ok(())
 	}
 
-	const ENABLE_COOKED_MODE: DWORD = ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT;
+	const ENABLE_COOKED_MODE: DWORD =
+		ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT;
 
 	pub(crate) fn cooked() -> Result<(), Error> {
 		let stdout = console_handle()?;
@@ -767,6 +828,10 @@ mod win {
 		}
 
 		Ok(())
+	}
+
+	pub(crate) fn is_windows_10() -> bool {
+		todo!()
 	}
 }
 
@@ -803,6 +868,10 @@ mod win {
 
 	pub(crate) fn cooked() -> Result<(), Error> {
 		Ok(())
+	}
+
+	pub(crate) fn is_windows_10() -> bool {
+		false
 	}
 }
 

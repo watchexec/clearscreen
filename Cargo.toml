@@ -19,6 +19,7 @@ exclude = ["/bin", "/.github"]
 log = "0.4.14"
 terminfo = "0.7.3"
 thiserror = "1.0.24"
+which = "4.1.0"
 
 [target.'cfg(unix)'.dependencies.nix]
 version = "0.20.0"
