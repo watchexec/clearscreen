@@ -505,6 +505,24 @@ Multiplexers
 
 ### Screen
 
+With `TERM=screen`:
+
+- Default: `XtermClear`.
+- `Terminfo`: normal (does not clear scrollback).
+- `TerminfoScreen`: adds a screenful of space to the scrollback before clearing.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: adds a screenful of space to the scrollback before clearing, does not clear scrollback.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: **clears scrollback**, even though `TerminfoScrollback` below doesn’t work.
+- `TerminfoScreen`: adds a screenful of space to the scrollback before clearing.
+- `TerminfoScrollback`: doesn’t do anything.
+- `VtRis`: adds a screenful of space to the scrollback before clearing, does not clear scrollback.
+- `XtermClear`: normal.
+
 ### Tab-rs
 
 ### Tmux
