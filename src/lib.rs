@@ -17,8 +17,8 @@
 //! If you are supporting Windows in any capacity, the [`is_windows_10()`] documentation is
 //! **required reading**.
 
-#![doc(html_favicon_url = "https://raw.githubusercontent.com/watchexec/clearscreen/main/logo.png")]
-#![doc(html_logo_url = "https://raw.githubusercontent.com/watchexec/clearscreen/main/logo.png")]
+#![doc(html_favicon_url = "https://raw.githubusercontent.com/watchexec/clearscreen/main/logo.svg")]
+#![doc(html_logo_url = "https://raw.githubusercontent.com/watchexec/clearscreen/main/logo.svg")]
 #![warn(missing_docs)]
 
 use std::{
