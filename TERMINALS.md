@@ -14,6 +14,7 @@ To contribute entries:
 - If a terminal has forks, especially if there’s a lot of them, only document a fork if its behaviour is different.
 - If the terminal is based on a common library, mention it.
 - If the terminal is web-based, mention that.
+- Document the current selection of `::default()`.
 - Document the behaviour of at least:
   - `Terminfo`
   - `TerminfoScreen`
@@ -141,6 +142,24 @@ Emulators
 ### GNOME Terminal
 
 - VTE-based
+
+With `TERM=gnome-256color`:
+
+- Default: `XTermClear`.
+- `Terminfo`: behaves like `TerminfoScreen`, doesn’t clear scrollback.
+- `TerminfoScreen`: adds a screenful of space to the scrollback before clearing.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: adds a screenful of space to the scrollback before clearing.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Goterminal
 

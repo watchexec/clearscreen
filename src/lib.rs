@@ -326,42 +326,54 @@ impl Default for ClearScreen {
 	/// you wish to only clear the screen and not the scrollback, or to perform a terminal reset, or
 	/// apply the other available clearing strategies, you’ll need to select what’s best yourself.
 	///
-	/// The current behaviour is:
+	/// See the [TERMINALS.md file in the repo][TERMINALS.md] for research on many terminals as well
+	/// as the current result of this function for each terminal.
 	///
-	/// - if compiled for windows (`cfg(windows)`):
-	///   - if we’re running in the Microsoft Terminal, [`XtermClear`][ClearScreen::XtermClear].
-	///   - or if we’re running in Windows 10, [`WindowsVtClear`][ClearScreen::WindowsVtClear].
-	///   - or if both `TERM` and `TERMINFO` are set, [`Terminfo`][ClearScreen::Terminfo].
-	///   - or if `TERM` is set and `tput` is available on the `PATH`, [`TputClear`][ClearScreen::TputClear].
-	///   - otherwise, [`Cls`][ClearScreen::Cls], for now (it should be WindowsConsoleClear but I haven’t tested properly on Win 8).
-	/// - otherwise (i.e. this is unix or unix-compatible):
-	///   - if `TERM_PROGRAM=iTerm.app` and `TERM` starts with `xterm`, [`XtermClear`][ClearScreen::XtermClear]
-	///     (iTerm doesn’t have its own terminfo, and uses xterm’s, but the xterm terminfo file on
-	///     macOS doesn’t have the E3 Erase Scrollback entry, even though iTerm supports it).
-	///   - if `TERM` is set, [`Terminfo`][ClearScreen::Terminfo].
-	///   - otherwise, [`XtermClear`][ClearScreen::XtermClear].
+	/// [TERMINALS.md]: https://github.com/watchexec/clearscreen/blob/main/TERMINALS.md
 	fn default() -> Self {
+		use env::var;
+		use std::ffi::OsStr;
+
+		fn varfull(key: impl AsRef<OsStr>) -> bool {
+			var(key).map_or(false, |s| !s.is_empty())
+		}
+
+		let term = var("TERM").ok();
+		let term = term.as_ref();
+		let term_program = var("TERM_PROGRAM").ok();
+		let term_program = term_program.as_ref();
+		let terminfo = varfull("TERMINFO");
+
 		if cfg!(windows) {
 			return if is_microsoft_terminal() {
 				Self::XtermClear
 			} else if is_windows_10() {
 				Self::WindowsVtClear
-			} else if env::var("TERM").is_ok() && env::var("TERMINFO").is_ok() {
+			} else if term.is_some() && terminfo {
 				Self::Terminfo
-			} else if env::var("TERM").is_ok() && which("tput").is_ok() {
+			} else if term.is_some() && which("tput").is_ok() {
 				Self::TputClear
 			} else {
 				Self::Cls
 			};
 		}
 
-		if let (Ok(term), Ok(termp)) = (env::var("TERM"), env::var("TERM_PROGRAM")) {
+		// iTerm2 supports CSI 3J but macOS’s xterm-256color terminfo (its default) doesn’t have E3
+		if let (Some(term), Some(termp)) = (term, term_program) {
 			if term.starts_with("xterm") && termp == "iTerm.app" {
 				return Self::XtermClear;
 			}
 		}
 
-		if env::var("TERM").is_ok() {
+		// GNOME Terminal supports CSI 3J but its own terminfo (gnome, gnome-*) doesn’t have E3
+		if term.map_or(false, |term| term.starts_with("gnome"))
+			&& varfull("GNOME_TERMINAL_SCREEN")
+			&& varfull("GNOME_TERMINAL_SERVICE")
+		{
+			return Self::XtermClear;
+		}
+
+		if term.is_some() {
 			return Self::Terminfo;
 		}
 
