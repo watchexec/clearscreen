@@ -11,7 +11,8 @@ To contribute entries:
 - Test with both the terminal’s own terminfo, and with `xterm-256color`.
 - If the terminal doesn’t have its own terminfo, note that, and note which it is trying to emulate.
   - And consider filing a bug to tell them to provide their own terminfo!
-- If a terminal has forks, especially if there’s a lot of them, only document a fork if its behaviour is different.
+- If a terminal has forks, especially if there’s a lot of them, only document a fork if its
+  behaviour is different.
 - If the terminal is based on a common library, mention it.
 - If the terminal is web-based, mention that.
 - Document the current selection of `::default()`.
@@ -20,14 +21,49 @@ To contribute entries:
   - `TerminfoScreen`
   - `TerminfoScrollback`
   - `VtRis`
-  - `XTermClear`
+  - `XtermClear`
 - “Normal” behaviour refers to:
+  - `::default()`: screen and scrollback (if at all possible) cleared
   - `Terminfo`: at least screen cleared, and optionally scrollback
   - `TerminfoScreen`: only screen cleared
   - `TerminfoScrollback`: only scrollback cleared
   - `VtRis`: screen and scrollback cleared, and (at least some modes of) terminal reset
-  - `XTermClear`: screen and scrollback cleared
+  - `XtermClear`: screen and scrollback cleared
 - There is zero tolerance for advertising via this document.
+
+How to test:
+------------
+
+First link the cli example program into your PATH, e.g.
+
+```
+ln -s $(pwd)/target/debug/examples/cli ~/.local/share/bin/clscli
+```
+
+Open the terminal in its default profile, or as it comes when first installed.
+
+Then use `env | grep TERM` to see what the `TERM` and other related variables look like (make note!).
+
+Look into `/usr/share/terminfo` for a terminfo that matches the terminal, or wherever it is on your
+system. If there's a separate but official package for the terminal’s terminfo, use it.
+
+First test with the native terminfo: set it either in the terminal’s settings, or use
+`env TERM=name $SHELL`, then with the `TERM` the terminal first starts with by default, and finally
+with `xterm-256color` if that’s not been covered yet.
+
+(Recall that `clscli` is the `cli` example program in this same repo.)
+
+ 1. First run `clscli auto`. Look quick, the name of the variant selected by default will be printed,
+    and one second later, hopefully, the screen will clear. Document that variant.
+ 2. Then run `clscli Variant` where the variant is: `Terminfo`, `TerminfoScreen`,
+    `TerminfoScrollback`, `VtRis`, `XtermClear`, and the variant discovered in 1, if not one of
+    these. Before each, run `seq 1 100` or something like it to fill the screen and some scrollback.
+    Document the behaviour if it differs from normal, or state “normal.”
+ 3. Optionally (if you want), if `clscli auto` does not exhibit the normal behaviour, open an issue
+    and provide enough details to be able to modify the `::default()` selection to select a
+    different default that works. If you’re really enthusiastic, you can even open a PR with it!
+ 4. To submit your research, either submit a PR to this file (preferred, you can even do it in the
+    GitHub Web UI), or open an issue with your research (I’ll merge it in), or send me an email.
 
 
 Emulator libraries
