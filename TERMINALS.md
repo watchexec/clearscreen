@@ -509,6 +509,24 @@ Multiplexers
 
 ### Tmux
 
+With `TERM=tmux-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: does not clear scrollback.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: adds a screenful of space to the scrollback before clearing.
+- `TerminfoScrollback`: normal.
+- `VtRis`: does not clear scrollback.
+- `XtermClear`: normal.
+
 ### ttysterm
 
 ### Zellij
