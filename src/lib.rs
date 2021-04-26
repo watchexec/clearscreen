@@ -365,12 +365,15 @@ impl Default for ClearScreen {
 			}
 		}
 
-		// GNOME Terminal supports CSI 3J but its own terminfo (gnome, gnome-*) doesn’t have E3
-		if term.map_or(false, |term| term.starts_with("gnome"))
-			&& varfull("GNOME_TERMINAL_SCREEN")
-			&& varfull("GNOME_TERMINAL_SERVICE")
-		{
-			return Self::XtermClear;
+		// These VTE-based terminals support CSI 3J but their own terminfos don’t have E3
+		if let Some(term) = term {
+			if (term.starts_with("gnome")
+				&& varfull("GNOME_TERMINAL_SCREEN")
+				&& varfull("GNOME_TERMINAL_SERVICE"))
+				|| term == "xfce"
+			{
+				return Self::XtermClear;
+			}
 		}
 
 		if term.is_some() {

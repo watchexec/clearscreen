@@ -379,6 +379,26 @@ With `TERM=xterm-256color`:
 
 ### XFCE4 Terminal
 
+- VTE-based
+
+With `TERM=xfce`:
+
+- Default: `XTermClear`.
+- `Terminfo`: behaves like `TerminfoScreen`, doesn’t clear scrollback.
+- `TerminfoScreen`: adds a screenful of space to the scrollback before clearing.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: adds a screenful of space to the scrollback before clearing.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### xiate
 
 ### Xterm
