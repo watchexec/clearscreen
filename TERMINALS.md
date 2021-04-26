@@ -97,6 +97,24 @@ Emulators
 
 ### Alacritty
 
+With `TERM=alacritty`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Aminal
 
 ### An9wer-st
