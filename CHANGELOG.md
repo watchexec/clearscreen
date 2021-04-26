@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v1.0.1 (2021-04-26)
+
 - Use `XtermClear` on iTerm on macOS when `TERM` starts with `xterm`, to work around macOS not
   having the correct terminfo by default.
 
