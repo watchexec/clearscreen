@@ -379,6 +379,10 @@ impl Default for ClearScreen {
 			if term.starts_with("screen") {
 				return Self::XtermClear;
 			}
+
+			if !term.is_empty() {
+				return Self::Terminfo;
+			}
 		}
 
 		Self::XtermClear
