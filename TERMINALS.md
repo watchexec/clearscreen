@@ -139,6 +139,15 @@ Native `TERM` is `xterm-256color`.
 
 ### ate
 
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Blink Shell (iOS)
 
 ### Bterm
