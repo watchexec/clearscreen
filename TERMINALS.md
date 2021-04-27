@@ -190,7 +190,25 @@ Native `TERM` is `xterm-256color`.
 
 ### Deepin Terminal
 
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: scrollback not cleared.
+- `XtermClear`: normal.
+
 #### Old GTK version
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Dinu
 
