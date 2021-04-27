@@ -382,6 +382,12 @@ impl Default for ClearScreen {
 				return Self::VtRis;
 			}
 
+			// SyncTERM does support the XtermClear sequence but does not clear the scrollback, and
+			// does not have a terminfo, so VtRis is the only option.
+			if term == "syncterm" {
+				return Self::VtRis;
+			}
+
 			// screen supports CSI 3J only within the XtermClear sequence, without E3 capability
 			if term.starts_with("screen") {
 				return Self::XtermClear;

@@ -693,9 +693,16 @@ There’s no scrollback at all, so it’s impossible to know how things are real
 
 - VTE-based
 
-### Sugar Terminal?
-
 ### Syncterm
+
+Native `TERM` is `syncterm`.
+
+- Default: `VtRis`.
+- `Terminfo`: no terminfo found.
+- `TerminfoScreen`: no terminfo found.
+- `TerminfoScrollback`: no terminfo found.
+- `VtRis`: normal.
+- `XtermClear`: does not clear scrollback.
 
 ### Taterm
 
