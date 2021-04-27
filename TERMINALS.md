@@ -535,6 +535,8 @@ Native `TERM` is `xterm`.
 
 ### Nemo Terminal
 
+- VTE-based
+
 ### Neovim
 
 ### Orbterm
