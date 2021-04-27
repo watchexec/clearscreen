@@ -453,6 +453,29 @@ With `TERM=xterm-256color`:
 
 ### Konsole
 
+With native `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: doesn’t clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `XtermClear`: normal.
+
+With `TERM=konsole`:
+
+- Default: `XtermClear`.
+- `Terminfo`: doesn’t clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: doesn’t clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `XtermClear`: normal.
+
 ### Lilyterm
 
 ### Liri Terminal

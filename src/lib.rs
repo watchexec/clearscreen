@@ -387,6 +387,11 @@ impl Default for ClearScreen {
 				return Self::XtermClear;
 			}
 
+			// Konsole handles CSI 3J correctly only within the XtermClear sequence
+			if term.starts_with("konsole") {
+				return Self::XtermClear;
+			}
+
 			if !term.is_empty() {
 				return Self::Terminfo;
 			}
