@@ -231,6 +231,8 @@ Native `TERM` is `xterm-256color`.
 
 ### eDEX UI
 
+- Doesn’t respect user shell by default.
+
 Native `TERM` is `xterm-256color`.
 
 - Default: `Terminfo`.
@@ -241,6 +243,20 @@ Native `TERM` is `xterm-256color`.
 - `XtermClear`: normal.
 
 ### Electerm
+
+- Doesn’t respect user shell by default.
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`. **The better option would be `VtRis`, but there’s no way to tell we’re
+  running in Electerm.**
+- `Terminfo`: normal, except scrollbar is weird, like it thinks there’s still all the old content,
+  but without showing any scrolling when going up or down.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: as for `Terminfo`.
 
 ### Elokab Terminal
 
