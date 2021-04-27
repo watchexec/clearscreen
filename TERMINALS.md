@@ -906,6 +906,17 @@ Multiplexers
 
 ### Mosh
 
+`TERM` is inherited, here with `xterm-256color`:
+
+There’s no scrollback at all, so it’s impossible to know how things are really handled, but 🤷.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### mtm
 
 ### Screen
