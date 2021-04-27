@@ -216,9 +216,18 @@ Native `TERM` is `xterm-256color`.
 
 ### domterm
 
-### dterm
-
 ### dwt
+
+- VTE-based
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Edex UI
 
