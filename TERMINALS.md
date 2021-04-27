@@ -412,7 +412,16 @@ Native `TERM` is `xterm-256color`.
 
 The `kermit` terminfo also exists, but may not be related, and does not work.
 
-### kgx
+### King’s Cross (kgx)
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Kitty
 
