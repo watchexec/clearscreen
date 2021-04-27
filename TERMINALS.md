@@ -628,7 +628,6 @@ Native `TERM` is `xterm-256color`.
 ### ROXTerm
 
 - VTE-based
-- Untested yet
 
 ### Runes
 
