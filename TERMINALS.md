@@ -699,6 +699,15 @@ There’s no scrollback at all, so it’s impossible to know how things are real
 
 ### Taterm
 
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Tdrop
 
 ### Terminal.app (GNUstep)
