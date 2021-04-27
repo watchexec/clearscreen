@@ -526,7 +526,16 @@ Native `TERM` is `xterm-256color`.
 
 ### Mantid
 
-- VTEng-based
+- VTE-based
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### MATE Terminal
 
