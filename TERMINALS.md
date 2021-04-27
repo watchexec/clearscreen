@@ -504,7 +504,6 @@ Native `TERM` is `xterm-256color`.
 ### Miniterm
 
 - VTE-based
-- Untested yet
 
 ### Mintty
 
