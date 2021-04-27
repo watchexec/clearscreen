@@ -344,6 +344,17 @@ Native `TERM` is `xterm-256color`.
 
 ### Guake
 
+- VTE-based
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### GNOME Terminal
 
 - VTE-based
