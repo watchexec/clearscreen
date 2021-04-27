@@ -675,7 +675,17 @@ With `TERM=xterm-256color`:
 ### sterm
 
 - VTE-based
-- Untested yet
+
+Native `TERM` is `xterm-256color`.
+
+There’s no scrollback at all, so it’s impossible to know how things are really handled, but 🤷.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### stgl
 
