@@ -285,9 +285,29 @@ Native `TERM` is `xterm-256color`.
 
 ### Fingerterm
 
-### Fluent Terminal
+### Fluent Terminal (Windows)
 
 ### Foot
+
+With `TERM=foot`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Fqterm
 
