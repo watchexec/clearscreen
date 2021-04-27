@@ -511,6 +511,15 @@ Native `TERM` is `xterm-256color`.
 
 - VTE-based
 
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### MacTerm
 
 ### MacWise
