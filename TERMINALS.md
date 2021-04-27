@@ -410,6 +410,8 @@ Native `TERM` is `xterm-256color`.
 - `VtRis`: normal.
 - `XtermClear`: normal.
 
+The `kermit` terminfo also exists, but may not be related, and does not work.
+
 ### kgx
 
 ### Kitty
