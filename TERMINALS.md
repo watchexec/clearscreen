@@ -89,6 +89,17 @@ Emulator libraries
 
 ### VTE
 
+When “VTE-based” is stated and nothing else, assume this:
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 
 Emulators
 ---------
@@ -218,15 +229,6 @@ Native `TERM` is `xterm-256color`.
 
 - VTE-based
 
-Native `TERM` is `xterm-256color`.
-
-- Default: `Terminfo`.
-- `Terminfo`: normal.
-- `TerminfoScreen`: normal.
-- `TerminfoScrollback`: normal.
-- `VtRis`: normal.
-- `XtermClear`: normal.
-
 ### eDEX UI
 
 - Doesn’t respect user shell by default.
@@ -265,6 +267,7 @@ Native `TERM` is `xterm-256color`.
 ### Evil VTE
 
 - VTE-based
+- Untested yet
 
 ### ExtraTerm
 
@@ -333,27 +336,9 @@ With `TERM=xterm-256color`:
 
 - VTE-based
 
-Native `TERM` is `xterm-256color`.
-
-- Default: `Terminfo`.
-- `Terminfo`: normal.
-- `TerminfoScreen`: normal.
-- `TerminfoScrollback`: normal.
-- `VtRis`: normal.
-- `XtermClear`: normal.
-
 ### Guake
 
 - VTE-based
-
-Native `TERM` is `xterm-256color`.
-
-- Default: `Terminfo`.
-- `Terminfo`: normal.
-- `TerminfoScreen`: normal.
-- `TerminfoScrollback`: normal.
-- `VtRis`: normal.
-- `XtermClear`: normal.
 
 ### GNOME Terminal
 
@@ -398,15 +383,6 @@ With `TERM=xterm-256color`:
 ### Kermit
 
 - VTE-based
-
-Native `TERM` is `xterm-256color`.
-
-- Default: `Terminfo`.
-- `Terminfo`: normal.
-- `TerminfoScreen`: normal.
-- `TerminfoScrollback`: normal.
-- `VtRis`: normal.
-- `XtermClear`: normal.
 
 The `kermit` terminfo also exists, but may not be related, and does not work.
 
@@ -511,15 +487,6 @@ Native `TERM` is `xterm-256color`.
 
 - VTE-based
 
-Native `TERM` is `xterm-256color`.
-
-- Default: `Terminfo`.
-- `Terminfo`: normal.
-- `TerminfoScreen`: normal.
-- `TerminfoScrollback`: normal.
-- `VtRis`: normal.
-- `XtermClear`: normal.
-
 ### MacTerm
 
 ### MacWise
@@ -528,33 +495,16 @@ Native `TERM` is `xterm-256color`.
 
 - VTE-based
 
-Native `TERM` is `xterm-256color`.
-
-- Default: `Terminfo`.
-- `Terminfo`: normal.
-- `TerminfoScreen`: normal.
-- `TerminfoScrollback`: normal.
-- `VtRis`: normal.
-- `XtermClear`: normal.
-
 ### MATE Terminal
 
 - VTE-based
-
-Native `TERM` is `xterm-256color`.
-
-- Default: `Terminfo`.
-- `Terminfo`: normal.
-- `TerminfoScreen`: normal.
-- `TerminfoScrollback`: normal.
-- `VtRis`: normal.
-- `XtermClear`: normal.
 
 ### Microsoft Terminal
 
 ### Miniterm
 
 - VTE-based
+- Untested yet
 
 ### Mintty
 
@@ -606,6 +556,7 @@ Native `TERM` is `xterm-256color`.
 ### ROXTerm
 
 - VTE-based
+- Untested yet
 
 ### Runes
 
@@ -614,6 +565,7 @@ Native `TERM` is `xterm-256color`.
 ### Sakura
 
 - VTE-based
+- Untested yet
 
 ### sdvt
 
@@ -644,12 +596,14 @@ With `TERM=xterm-256color`:
 ### sterm
 
 - VTE-based
+- Untested yet
 
 ### stgl
 
 ### StupidTerm
 
 - VTE-based
+- Untested yet
 
 ### Sugar Terminal?
 
@@ -670,6 +624,7 @@ With `TERM=xterm-256color`:
 ### Terminate
 
 - VTE-based
+- Untested yet
 
 ### Terminator
 
@@ -684,6 +639,7 @@ With `TERM=xterm-256color`:
 ### Termit
 
 - VTE-based
+- Untested yet
 
 ### Termite
 
@@ -706,18 +662,22 @@ With `TERM=xterm-256color`:
 ### Tinyterm
 
 - VTE-based
+- Untested yet
 
 ### Topinambour
 
 - VTE-based
+- Untested yet
 
 ### Tortosa
 
 - VTE-based
+- Untested yet
 
 ### Ume
 
 - VTE-based
+- Untested yet
 
 ### urxvt
 
