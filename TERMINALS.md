@@ -34,10 +34,10 @@ To contribute entries:
 How to test:
 ------------
 
-First link the cli example program into your PATH, e.g.
+First link the clscli example program into your PATH, e.g.
 
 ```
-ln -s $(pwd)/target/debug/examples/cli ~/.local/share/bin/clscli
+ln -s $(pwd)/target/debug/examples/clscli ~/.local/share/bin/clscli
 ```
 
 Open the terminal in its default profile, or as it comes when first installed.
@@ -50,8 +50,6 @@ system. If there's a separate but official package for the terminal’s terminfo
 First test with the native terminfo: set it either in the terminal’s settings, or use
 `env TERM=name $SHELL`, then with the `TERM` the terminal first starts with by default, and finally
 with `xterm-256color` if that’s not been covered yet.
-
-(Recall that `clscli` is the `cli` example program in this same repo.)
 
  1. First run `clscli auto`. Look quick, the name of the variant selected by default will be printed,
     and one second later, hopefully, the screen will clear. Document that variant.
