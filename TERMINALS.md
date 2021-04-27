@@ -539,6 +539,17 @@ Native `TERM` is `xterm-256color`.
 
 ### MATE Terminal
 
+- VTE-based
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Microsoft Terminal
 
 ### Miniterm
