@@ -270,6 +270,17 @@ Native `TERM` is `xterm-256color`.
 
 ### ExtraTerm
 
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`. (Mostly because it’s the least worst and has a chance to get better.)
+- `Terminfo`: does not clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: behaves like `Terminfo` but also prints `[2m` (badly handled unknown escape).
+- `XtermClear`: as for `Terminfo`.
+
 ### fbpad
 
 ### Fingerterm
