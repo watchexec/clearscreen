@@ -309,7 +309,25 @@ With `TERM=xterm-256color`:
 - `VtRis`: normal.
 - `XtermClear`: normal.
 
-### Fqterm
+### FQTerm
+
+With `TERM=vt102`:
+
+- Default: `Terminfo`.
+- `Terminfo`: doesn’t clear scrollback.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: doesn’t support E3.
+- `VtRis`: does nothing.
+- `XtermClear`: doesn’t clear scrollback.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: doesn’t clear scrollback.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: does nothing.
+- `XtermClear`: doesn’t clear scrollback.
 
 ### Germinal
 
