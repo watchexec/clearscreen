@@ -692,7 +692,6 @@ There’s no scrollback at all, so it’s impossible to know how things are real
 ### StupidTerm
 
 - VTE-based
-- Untested yet
 
 ### Sugar Terminal?
 
