@@ -3,6 +3,7 @@
 ## Next (YYYY-MM-DD)
 
 - Use `XtermClear` for `screen` when using its own terminfo, the GNOME Terminal when using its own terminfo, and XFCE4 Terminal when using its own terminfo.
+- Use `VtRis` for Kitty when using its own terminfo.
 
 ## v1.0.1 (2021-04-26)
 

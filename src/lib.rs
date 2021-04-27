@@ -375,6 +375,13 @@ impl Default for ClearScreen {
 				return Self::XtermClear;
 			}
 
+			// Kitty when using its own terminfos erases the screen instead of clearing and doesn’t
+			// clear scrollback. It does support and behave properly for the entire XtermClear
+			// sequence, but it also does the right thing with VtRis, and that seems more reliable.
+			if term.contains("kitty") {
+				return Self::VtRis;
+			}
+
 			// screen supports CSI 3J only within the XtermClear sequence, without E3 capability
 			if term.starts_with("screen") {
 				return Self::XtermClear;

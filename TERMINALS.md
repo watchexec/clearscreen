@@ -425,6 +425,30 @@ Native `TERM` is `xterm-256color`.
 
 ### Kitty
 
+With native `TERM=xterm-kitty`:
+
+- Default: `VtRis`.
+- `Terminfo`: does not clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=kitty`: as with `xterm-kitty`.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: erases scrollback and screen, but does not clear them (can be scrolled, but
+  all is blank).
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### KMScon
 
 ### Konsole
