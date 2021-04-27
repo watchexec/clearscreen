@@ -289,6 +289,8 @@ Native `TERM` is `xterm-256color`.
 
 ### Foot
 
+- Wayland only
+
 With `TERM=foot`:
 
 - Default: `Terminfo`.
@@ -381,6 +383,8 @@ With `TERM=xterm-256color`:
 
 ### Havoc
 
+- Wayland only
+
 ### Hyper
 
 - Web-based
@@ -394,6 +398,17 @@ With `TERM=xterm-256color`:
 ### JuiceSSH
 
 ### Kermit
+
+- VTE-based
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### kgx
 
