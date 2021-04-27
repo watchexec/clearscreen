@@ -348,6 +348,24 @@ With `TERM=xterm-256color`:
 
 ### st
 
+With `TERM=st-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: also clears scrollback.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: also clears scrollback.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Station
 
 ### sterm
