@@ -496,6 +496,16 @@ Native `TERM` is `xterm-256color`.
 ### lwt
 
 - VTE-based
+- Doesn’t respect user shell by default.
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: adds a screenful of space to the scrollback before clearing.
+- `TerminfoScrollback`: normal.
+- `VtRis`: doesn’t clear scrollback.
+- `XtermClear`: normal.
 
 ### LX Terminal
 
