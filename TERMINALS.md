@@ -499,6 +499,17 @@ Native `TERM` is `xterm-256color`.
 
 - VTE-based
 
+### Maui Station
+
+Native `TERM` is `xterm`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: doesn’t clear scrollback.
+- `XtermClear`: normal.
+
 ### Microsoft Terminal
 
 ### Miniterm
@@ -660,8 +671,6 @@ With `TERM=xterm-256color`:
 - `TerminfoScrollback`: does nothing.
 - `VtRis`: normal.
 - `XtermClear`: normal.
-
-### Station
 
 ### sterm
 
