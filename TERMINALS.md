@@ -539,6 +539,18 @@ Native `TERM` is `xterm`.
 
 ### Neovim
 
+`TERM` is inherited. With `xterm-256color`:
+
+- Default: `Terminfo`. (No real good option here.)
+- `Terminfo`: doesn’t clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: doesn’t clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `XtermClear`: as for `Terminfo`.
+
 ### Orbterm
 
 ### Pangoterm
