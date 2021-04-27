@@ -119,7 +119,8 @@ With `TERM=xterm-256color`:
 
 Native `TERM` is `xterm-256color`.
 
-- Default: `VtRis`. **Trade-off: no option is really correct, but this is the least worse.**
+- Default: `Terminfo`. **The better option would be `VtRis`, but there’s no way to tell we’re
+  running in Aminal.**
 - `Terminfo`: does not clear scrollback, appears to clear the screen, but really erases the screen
   without scrolling the existing output up, thus losing a screenful of information.
 - `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
@@ -155,6 +156,15 @@ Native `TERM` is `xterm-256color`.
 ### ConsoleZ
 
 ### Cool Retro Term
+
+Native `TERM` is `xterm`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: scrollback not cleared.
+- `XtermClear`: normal.
 
 ### Core Terminal
 
