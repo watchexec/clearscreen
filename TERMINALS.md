@@ -117,7 +117,18 @@ With `TERM=xterm-256color`:
 
 ### Aminal
 
-### An9wer-st
+Native `TERM` is `xterm-256color`.
+
+- Default: `VtRis`. **Trade-off: no option is really correct, but this is the least worse.**
+- `Terminfo`: does not clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does not clear scrollback, erases the screen, but leaves cursor position
+  intact, i.e. at the bottom of the screen if we were there.
+- `VtRis`: clears screen, doesn’t clear scrollback, but does push the existing output up, so that
+  information is not lost.
+- `XtermClear`: as for `Terminfo`.
 
 ### Android Terminal Emulator
 
