@@ -592,6 +592,15 @@ With `TERM=putty`:
 
 ### QML Konsole
 
+Native `TERM` is `xterm`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: does not clear scrollback.
+- `XtermClear`: normal.
+
 ### Qt DOM term
 
 ### Qterminal
