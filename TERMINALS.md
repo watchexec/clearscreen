@@ -636,7 +636,6 @@ Native `TERM` is `xterm-256color`.
 ### Sakura
 
 - VTE-based
-- Untested yet
 
 ### sdvt
 
