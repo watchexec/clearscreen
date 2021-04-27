@@ -557,7 +557,16 @@ Native `TERM` is `xterm`.
 
 - libvterm-based
 
-### Pantheon Terminal
+### Pantheon/Elementary Terminal
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### PowerCmd
 
