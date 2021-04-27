@@ -106,6 +106,8 @@ Emulators
 
 ### Alacritty
 
+- Version 0.7.2
+
 With `TERM=alacritty`:
 
 - Default: `Terminfo`.
@@ -125,6 +127,8 @@ With `TERM=xterm-256color`:
 - `XtermClear`: normal.
 
 ### Aminal
+
+- Version Nightly-develop-2020-01-26-4033a8b
 
 Native `TERM` is `xterm-256color`.
 
@@ -147,6 +151,8 @@ Native `TERM` is `xterm-256color`.
 - Web-based
 
 ### ate
+
+- Version 1.0.1
 
 Native `TERM` is `xterm-256color`.
 
@@ -175,6 +181,8 @@ Native `TERM` is `xterm-256color`.
 
 ### Cool Retro Term
 
+- Version 1.1.1
+
 Native `TERM` is `xterm`.
 
 - Default: `Terminfo`.
@@ -186,6 +194,7 @@ Native `TERM` is `xterm`.
 
 ### Core Terminal
 
+- Version 4.2.0
 - Doesn’t respect user shell by default.
 
 Native `TERM` is `xterm-256color`.
@@ -199,6 +208,8 @@ Native `TERM` is `xterm-256color`.
 
 ### Deepin Terminal
 
+- Version 5.4.0.6
+
 Native `TERM` is `xterm-256color`.
 
 - Default: `Terminfo`.
@@ -209,6 +220,8 @@ Native `TERM` is `xterm-256color`.
 - `XtermClear`: normal.
 
 #### Old GTK version
+
+- Version 5.0.4.3
 
 Native `TERM` is `xterm-256color`.
 
@@ -227,10 +240,12 @@ Native `TERM` is `xterm-256color`.
 
 ### dwt
 
+- Version 0.6.0
 - VTE-based
 
 ### eDEX UI
 
+- Version 2.2.7
 - Doesn’t respect user shell by default.
 
 Native `TERM` is `xterm-256color`.
@@ -244,6 +259,7 @@ Native `TERM` is `xterm-256color`.
 
 ### Electerm
 
+- Version 1.11.16
 - Doesn’t respect user shell by default.
 
 Native `TERM` is `xterm-256color`.
@@ -271,6 +287,8 @@ Native `TERM` is `xterm-256color`.
 
 ### ExtraTerm
 
+- Version 0.58.0
+
 Native `TERM` is `xterm-256color`.
 
 - Default: `Terminfo`. (Mostly because it’s the least worst and has a chance to get better.)
@@ -290,6 +308,7 @@ Native `TERM` is `xterm-256color`.
 
 ### Foot
 
+- Version 1.7.2
 - Wayland only
 
 With `TERM=foot`:
@@ -314,6 +333,8 @@ With `TERM=xterm-256color`:
 
 ### FQTerm
 
+- Version 0.9.10.1.1.g55d08df
+
 With `TERM=vt102`:
 
 - Default: `Terminfo`.
@@ -334,14 +355,17 @@ With `TERM=xterm-256color`:
 
 ### Germinal
 
+- Version 26
 - VTE-based
 
 ### Guake
 
+- Version 3.7.0
 - VTE-based
 
 ### GNOME Terminal
 
+- Version 3.40.0
 - VTE-based
 
 With `TERM=gnome-256color`:
@@ -382,11 +406,14 @@ With `TERM=xterm-256color`:
 
 ### Kermit
 
+- Version 3.4
 - VTE-based
 
 The `kermit` terminfo also exists, but may not be related, and does not work.
 
 ### King’s Cross (kgx)
+
+- Version 0.2.1
 
 Native `TERM` is `xterm-256color`.
 
@@ -398,6 +425,8 @@ Native `TERM` is `xterm-256color`.
 - `XtermClear`: normal.
 
 ### Kitty
+
+- Version 0.20.1
 
 With native `TERM=xterm-kitty`:
 
@@ -426,6 +455,8 @@ With `TERM=xterm-256color`:
 ### KMScon
 
 ### Konsole
+
+- Version 21.04.0
 
 With native `TERM=xterm-256color`:
 
@@ -456,6 +487,7 @@ With `TERM=konsole`:
 
 ### Liri Terminal
 
+- Version 0.2.0
 - Doesn’t respect user shell by default.
 
 Native `TERM` is `xterm-256color`.
@@ -471,6 +503,7 @@ Native `TERM` is `xterm-256color`.
 
 ### lwt
 
+- Version 2020-12-02
 - VTE-based
 - Doesn’t respect user shell by default.
 
@@ -485,6 +518,7 @@ Native `TERM` is `xterm-256color`.
 
 ### LX Terminal
 
+- Version 0.4.0
 - VTE-based
 
 ### MacTerm
@@ -493,13 +527,17 @@ Native `TERM` is `xterm-256color`.
 
 ### Mantid
 
+- Version 1.0.6
 - VTE-based
 
 ### MATE Terminal
 
+- Version 1.24.1
 - VTE-based
 
 ### Maui Station
+
+- Version 1.2.1
 
 Native `TERM` is `xterm`.
 
@@ -514,6 +552,7 @@ Native `TERM` is `xterm`.
 
 ### Miniterm
 
+- Version 1.7.0
 - VTE-based
 
 ### MinTTY (Windows)
@@ -521,6 +560,8 @@ Native `TERM` is `xterm`.
 ### Miro
 
 ### MLTERM
+
+- Version 3.9.0
 
 Native `TERM` is `xterm`.
 
@@ -542,13 +583,17 @@ Native `TERM` is `xterm`.
 
 ### Nautilus Terminal
 
+- Version 3.5.0
 - VTE-based
 
 ### Nemo Terminal
 
+- Version 4.8.0
 - VTE-based
 
 ### Neovim
+
+- Version 0.4.4
 
 `TERM` is inherited. With `xterm-256color`:
 
@@ -570,6 +615,8 @@ Native `TERM` is `xterm`.
 
 ### Pantheon/Elementary Terminal
 
+- Version 5.5.2
+
 Native `TERM` is `xterm-256color`.
 
 - Default: `Terminfo`.
@@ -582,6 +629,8 @@ Native `TERM` is `xterm-256color`.
 ### PowerCmd
 
 ### PuTTY
+
+- Version 0.74
 
 With native `TERM=xterm`:
 
@@ -603,6 +652,8 @@ With `TERM=putty`:
 
 ### QML Konsole
 
+- Version 0.1.r2.g81e74ad
+
 Native `TERM` is `xterm`.
 
 - Default: `Terminfo`.
@@ -616,6 +667,8 @@ Native `TERM` is `xterm`.
 
 ### Qterminal
 
+- Version 0.16.1
+
 Native `TERM` is `xterm-256color`.
 
 - Default: `Terminfo`.
@@ -626,6 +679,8 @@ Native `TERM` is `xterm-256color`.
 - `XtermClear`: normal.
 
 ### rcfvt
+
+- Version r66.d390d61
 
 Native `TERM` is `xterm-256color`.
 
@@ -638,6 +693,7 @@ Native `TERM` is `xterm-256color`.
 
 ### ROXTerm
 
+- Version 3.10.1
 - VTE-based
 
 ### Runes
@@ -646,6 +702,7 @@ Native `TERM` is `xterm-256color`.
 
 ### Sakura
 
+- Version 3.8.1
 - VTE-based
 
 ### sdvt
@@ -653,6 +710,8 @@ Native `TERM` is `xterm-256color`.
 ### Snowflake
 
 ### st
+
+- Version 0.8.4
 
 With `TERM=st-256color`:
 
@@ -674,6 +733,7 @@ With `TERM=xterm-256color`:
 
 ### sterm
 
+- Version 0.1.2
 - VTE-based
 
 Native `TERM` is `xterm-256color`.
@@ -691,9 +751,12 @@ There’s no scrollback at all, so it’s impossible to know how things are real
 
 ### StupidTerm
 
+- Version 1.r24.gf824e41
 - VTE-based
 
 ### Syncterm
+
+- Version 1.1
 
 Native `TERM` is `syncterm`.
 
@@ -705,6 +768,8 @@ Native `TERM` is `syncterm`.
 - `XtermClear`: does not clear scrollback.
 
 ### Taterm
+
+- Version 12
 
 Native `TERM` is `xterm-256color`.
 
@@ -809,6 +874,7 @@ Native `TERM` is `xterm-256color`.
 
 ### XFCE4 Terminal
 
+- Version 0.8.10
 - VTE-based
 
 With `TERM=xfce`:
@@ -839,6 +905,7 @@ With `TERM=xterm-256color`:
 
 ### Yakuake
 
+- Version 21.04.0
 - Konsole-based
 
 Native `TERM` is `xterm-256color`.
@@ -906,6 +973,8 @@ Multiplexers
 
 ### Mosh
 
+- Version 1.3.2
+
 `TERM` is inherited, here with `xterm-256color`:
 
 There’s no scrollback at all, so it’s impossible to know how things are really handled, but 🤷.
@@ -920,6 +989,8 @@ There’s no scrollback at all, so it’s impossible to know how things are real
 ### mtm
 
 ### Screen
+
+- Version 4.08.00
 
 With `TERM=screen`:
 
@@ -942,6 +1013,8 @@ With `TERM=xterm-256color`:
 ### Tab-rs
 
 ### Tmux
+
+- Version 3.2
 
 With `TERM=tmux-256color`:
 
