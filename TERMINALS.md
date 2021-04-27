@@ -177,6 +177,17 @@ Native `TERM` is `xterm`.
 
 ### Core Terminal
 
+- Doesn’t respect user shell by default.
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: scrollback not cleared.
+- `XtermClear`: normal.
+
 ### Deepin Terminal
 
 #### Old GTK version
