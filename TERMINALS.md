@@ -476,7 +476,20 @@ With `TERM=konsole`:
 
 ### Lilyterm
 
+- libvte-based
+
 ### Liri Terminal
+
+- Doesn’t respect user shell by default.
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: doesn’t clear scrollback.
+- `XtermClear`: normal.
 
 ### Literm
 
