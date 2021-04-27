@@ -505,11 +505,23 @@ Native `TERM` is `xterm-256color`.
 
 - VTE-based
 
-### Mintty
+### MinTTY (Windows)
 
 ### Miro
 
 ### MLTERM
+
+Native `TERM` is `xterm`.
+
+- Default: `Terminfo`. (No real good option here.)
+- `Terminfo`: doesn’t clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: doesn’t clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `XtermClear`: as for `Terminfo`.
 
 ### MobaXTerm
 
