@@ -572,6 +572,24 @@ Native `TERM` is `xterm-256color`.
 
 ### PuTTY
 
+With native `TERM=xterm`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: does not clear scrollback.
+- `XtermClear`: normal.
+
+With `TERM=putty`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: does not clear scrollback.
+- `XtermClear`: normal.
+
 ### QML Konsole
 
 ### Qt DOM term
