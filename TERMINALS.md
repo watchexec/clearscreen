@@ -531,6 +531,8 @@ Native `TERM` is `xterm`.
 
 ### Nautilus Terminal
 
+- VTE-based
+
 ### Nemo Terminal
 
 ### Neovim
