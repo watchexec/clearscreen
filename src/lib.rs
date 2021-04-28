@@ -371,6 +371,7 @@ impl Default for ClearScreen {
 				&& varfull("GNOME_TERMINAL_SCREEN")
 				&& varfull("GNOME_TERMINAL_SERVICE"))
 				|| term == "xfce"
+				|| term.contains("termite")
 			{
 				return Self::XtermClear;
 			}

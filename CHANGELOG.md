@@ -8,6 +8,7 @@
   - GNOME Terminal,
   - Konsole,
   - screen,
+  - Termite,
   - XFCE4 Terminal.
 
 ## v1.0.1 (2021-04-26)

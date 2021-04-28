@@ -837,12 +837,44 @@ Native `TERM` is `xterm-256color`.
 
 ### Termistor
 
+- Wayland only
+
 ### Termit
 
+- Version 3.1.r4.g29bbd1b
 - VTE-based
-- Untested yet
 
 ### Termite
+
+- Version 15
+- VTE-based
+
+With native `TERM=xterm-termite`:
+
+- Default: `XTermClear`.
+- `Terminfo`: normal (doesn’t clear scrollback).
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=termite`:
+
+- Default: `XTermClear`.
+- `Terminfo`: normal (doesn’t clear scrollback).
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Termius
 
