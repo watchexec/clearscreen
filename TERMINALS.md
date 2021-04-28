@@ -878,6 +878,22 @@ With `TERM=xterm-256color`:
 
 ### Termius
 
+- Version 7.9.0
+
+Native `TERM` is `xterm`.
+
+- Default: `Terminfo`. **The better option would be `VtRis`, but there’s no way to tell we’re
+  running in Termius.**
+- `Terminfo`: normal, except scrollbar is weird, like it thinks there’s still all the old content,
+  but without showing any scrolling when going up or down.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal, except scrollbar is even weirder, like it thinks there’s still all the old
+  content, but without _allowing the screen to be scrolled at all._ Once the screen fills up again,
+  the scrollbar resets.
+- `XtermClear`: as for `Terminfo`.
+
 ### Termy
 
 ### Terra
