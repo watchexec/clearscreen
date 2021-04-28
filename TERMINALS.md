@@ -2,8 +2,7 @@ Research on Terminals
 =====================
 
 All tested with their latest version obtainable of Arch Linux (or macOS 11, Windows 10) as of
-writing. Version tested is noted where possible, but otherwise compare to git blame date for the
-entry.
+writing. Version tested is noted where possible, but otherwise compare to the git blame date.
 
 To contribute entries:
 

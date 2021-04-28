@@ -1,5 +1,5 @@
-use std::{env, thread::sleep, time::Duration};
 use clearscreen::ClearScreen;
+use std::{env, thread::sleep, time::Duration};
 use thiserror::Error;
 
 fn main() -> Result<(), Error> {
@@ -24,7 +24,7 @@ fn main() -> Result<(), Error> {
 			"VtLeaveAlt" => ClearScreen::VtLeaveAlt,
 			"VtCooked" => ClearScreen::VtCooked,
 			"VtWellDone" => ClearScreen::VtWellDone,
-			_ => return Err(Error::UnknownVariant(variant))
+			_ => return Err(Error::UnknownVariant(variant)),
 		};
 
 		println!("variant = {:?}, sleeping 1 second", cs);

@@ -2,7 +2,6 @@ use std::env::var;
 
 use clearscreen::ClearScreen;
 
-
 #[test]
 fn terminfo() {
 	if var("TERM").is_ok() && (cfg!(unix) || var("TERMINFO").is_ok()) {
