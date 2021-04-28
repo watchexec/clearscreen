@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+- Drop unused `log` dependency.
+
 ## v1.0.2 (2021-04-29)
 
 - Use `VtRis` for Kitty when using its own terminfo.
