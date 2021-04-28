@@ -1270,6 +1270,29 @@ There’s no scrollback at all, so it’s impossible to know how things are real
 
 ### mtm
 
+- Version r394.b14e99c
+
+With native `TERM=screen-265color-bce`:
+
+- Default: `XtermClear`.
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. Doesn’t clear scrollback.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: as for `Terminfo`.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: clears scrollback **and screen**, but leaves the cursor position.
+- `VtRis`: as for `TerminfoScreen`.
+- `XtermClear`: normal.
+
 ### Screen
 
 - Version 4.08.00

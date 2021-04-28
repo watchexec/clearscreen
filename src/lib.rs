@@ -398,7 +398,7 @@ impl Default for ClearScreen {
 
 			// - screen supports CSI 3J only within the XtermClear sequence, without E3 capability.
 			// - Konsole handles CSI 3J correctly only within the XtermClear sequence.
-			if term.starts_with("screen") && term.starts_with("konsole") {
+			if term.starts_with("screen") || term.starts_with("konsole") {
 				return Self::XtermClear;
 			}
 
