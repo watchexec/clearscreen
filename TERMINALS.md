@@ -806,6 +806,17 @@ With `TERM=xterm-256color`:
 
 ### Terminator
 
+- Version 2.1.1
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Terminol
 
 ### Terminology
