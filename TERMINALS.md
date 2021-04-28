@@ -780,8 +780,6 @@ Native `TERM` is `xterm-256color`.
 - `VtRis`: normal.
 - `XtermClear`: normal.
 
-### Tdrop
-
 ### Terminal.app (GNUstep)
 
 ### Terminal.app (macOS)
@@ -792,8 +790,19 @@ Native `TERM` is `xterm-256color`.
 
 ### Terminate
 
+- Version 0.5
 - VTE-based
-- Untested yet
+- _Requires_ a TERM to be set, doesn’t manage to get set up properly without.
+- There’s no scrollback at all, so it’s impossible to know how things are really handled, but 🤷.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Terminator
 
