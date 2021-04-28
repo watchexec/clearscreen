@@ -1099,6 +1099,18 @@ Native `TERM` is `xterm-256color`.
 
 ### Xterm
 
+- Version 367
+
+Native `TERM` is `xterm`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal, and dings the terminal bell.
+- `XtermClear`: normal.
+
 ### Yaft
 
 ### Yaftx
