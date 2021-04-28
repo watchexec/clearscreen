@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v1.0.2 (2021-04-29)
+
 - Use `VtRis` for Kitty when using its own terminfo.
 - Use `VtRis` for SyncTERM, Tess, any rxvt, Zellij, and Zutty.
 - Use `XtermClear` for these when using their own terminfo:
