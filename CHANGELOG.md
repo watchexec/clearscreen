@@ -3,7 +3,7 @@
 ## Next (YYYY-MM-DD)
 
 - Use `VtRis` for Kitty when using its own terminfo.
-- Use `VtRis` for SyncTERM, Tess.
+- Use `VtRis` for SyncTERM, Tess, any rxvt.
 - Use `XtermClear` for these when using their own terminfo:
   - GNOME Terminal,
   - Konsole,

@@ -376,15 +376,18 @@ impl Default for ClearScreen {
 				return Self::XtermClear;
 			}
 
-			// - Kitty, when using its own terminfos, erases the screen instead of clearing and
-			// doesn’t clear scrollback. It supports and behave properly for the entire XtermClear
-			// sequence, but it also does the right thing with VtRis, and that seems more reliable.
 			// - SyncTERM does support the XtermClear sequence but does not clear the scrollback,
 			// and does not have a terminfo, so VtRis is the only option.
+			// - rxvt, when using its own terminfos, erases the screen instead of clearing and
+			// doesn’t clear scrollback. It supports and behave properly for the entire XtermClear
+			// sequence, but it also does the right thing with VtRis, and that seems more reliable.
+			// - Other variants of (u)rxvt do the same.
+			// - Kitty does as rxvt does here.
 			// - Tess does support the XtermClear sequence but has a weird scrollbar behaviour,
 			// which does not happen with VtRis.
-			if term.contains("kitty")
-				|| term == "syncterm"
+			if term == "syncterm"
+			|| term.contains("rxvt")
+			|| term.contains("kitty")
 				|| var("CHROME_DESKTOP").map_or(false, |cd| cd == "tess.desktop")
 			{
 				return Self::VtRis;

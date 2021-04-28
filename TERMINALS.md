@@ -698,8 +698,6 @@ Native `TERM` is `xterm-256color`.
 
 ### Runes
 
-### rxvt
-
 ### Sakura
 
 - Version 3.8.1
@@ -966,6 +964,30 @@ Native `TERM` is `xterm-256color`.
 - VTE-based
 
 ### urxvt
+
+- Version 9.22
+
+With native `TERM=rxvt-unicode-265color`:
+
+- Default: `VtRis`.
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. (Doesn’t clear scrollback.)
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: as for `Terminfo`.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. (Doesn’t clear scrollback.)
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: normal.
+- `XtermClear`: as for `Terminfo`.
 
 ### uterm
 
