@@ -1026,6 +1026,19 @@ Native `TERM` is `xterm-256color`.
 
 ### Wayst
 
+- Version r223.e72ca78
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`. **The better option would be `VtRis`, but there’s no way to tell we’re
+  running in Wayst.**
+- `Terminfo`: normal, doesn’t clear scrollback.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: clears the screen, keeping the cursor position the same, but doesn’t clear
+  scrollback!
+- `VtRis`: normal.
+- `XtermClear`: doesn’t clear scrollback.
+
 ### Wezterm
 
 ### WindTerm
