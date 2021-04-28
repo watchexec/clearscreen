@@ -997,6 +997,17 @@ With `TERM=xterm-256color`:
 
 ### Viter
 
+- Version r166.c8ca21a
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### vt100-parser
 
 ### Wayst
