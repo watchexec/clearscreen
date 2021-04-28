@@ -376,26 +376,23 @@ impl Default for ClearScreen {
 				return Self::XtermClear;
 			}
 
-			// Kitty when using its own terminfos erases the screen instead of clearing and doesn’t
-			// clear scrollback. It does support and behave properly for the entire XtermClear
+			// - Kitty, when using its own terminfos, erases the screen instead of clearing and
+			// doesn’t clear scrollback. It supports and behave properly for the entire XtermClear
 			// sequence, but it also does the right thing with VtRis, and that seems more reliable.
-			if term.contains("kitty") {
+			// - SyncTERM does support the XtermClear sequence but does not clear the scrollback,
+			// and does not have a terminfo, so VtRis is the only option.
+			// - Tess does support the XtermClear sequence but has a weird scrollbar behaviour,
+			// which does not happen with VtRis.
+			if term.contains("kitty")
+				|| term == "syncterm"
+				|| var("CHROME_DESKTOP").map_or(false, |cd| cd == "tess.desktop")
+			{
 				return Self::VtRis;
 			}
 
-			// SyncTERM does support the XtermClear sequence but does not clear the scrollback, and
-			// does not have a terminfo, so VtRis is the only option.
-			if term == "syncterm" {
-				return Self::VtRis;
-			}
-
-			// screen supports CSI 3J only within the XtermClear sequence, without E3 capability
-			if term.starts_with("screen") {
-				return Self::XtermClear;
-			}
-
-			// Konsole handles CSI 3J correctly only within the XtermClear sequence
-			if term.starts_with("konsole") {
+			// - screen supports CSI 3J only within the XtermClear sequence, without E3 capability.
+			// - Konsole handles CSI 3J correctly only within the XtermClear sequence.
+			if term.starts_with("screen") && term.starts_with("konsole") {
 				return Self::XtermClear;
 			}
 

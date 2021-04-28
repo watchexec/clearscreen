@@ -900,6 +900,21 @@ Native `TERM` is `xterm`.
 
 ### Tess
 
+- Version 1.2r65.12944dd
+- Doesn’t respect user shell by default.
+
+Native `TERM` is `xterm-color`.
+
+- Default: `VtRis`.
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. (Doesn’t clear scrollback.)
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal, except scrollbar is weird, like it thinks there’s still all the old content,
+  but without showing any scrolling when going up or down.
+
 ### The Terminal
 
 ### TreeTerm
