@@ -1115,6 +1115,27 @@ Native `TERM` is `xterm`.
 
 ### Yaftx
 
+- Version 0.2.9
+- There’s no scrollback at all, so it’s impossible to know how things are really handled, but 🤷.
+
+With native `TERM=yaft-265color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Yakuake
 
 - Version 21.04.0
