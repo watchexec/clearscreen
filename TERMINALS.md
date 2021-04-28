@@ -962,8 +962,8 @@ Native `TERM` is `xterm-256color`.
 
 ### Ume
 
+- Version r67.242a9f5
 - VTE-based
-- Untested yet
 
 ### urxvt
 
