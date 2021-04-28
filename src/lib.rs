@@ -387,11 +387,13 @@ impl Default for ClearScreen {
 			// which does not happen with VtRis.
 			// - Zutty does not support E3, and erases the buffer on clear like rxvt, but does work
 			// properly with VtRis.
+			// - Same behaviour with the multiplexer Zellij.
 			if term == "syncterm"
 				|| term.contains("rxvt")
 				|| term.contains("kitty")
 				|| var("CHROME_DESKTOP").map_or(false, |cd| cd == "tess.desktop")
 				|| varfull("ZUTTY_VERSION")
+				|| varfull("ZELLIJ")
 			{
 				return Self::VtRis;
 			}

@@ -1256,10 +1256,10 @@ With `TERM=xterm-256color`:
 ### Mosh
 
 - Version 1.3.2
+- `TERM` is inherited.
+- There’s no scrollback at all, so it’s impossible to know how things are really handled, but 🤷.
 
-`TERM` is inherited, here with `xterm-256color`:
-
-There’s no scrollback at all, so it’s impossible to know how things are really handled, but 🤷.
+Tested here with `xterm-256color`:
 
 - Default: `Terminfo`.
 - `Terminfo`: normal.
@@ -1352,9 +1352,21 @@ With `TERM=xterm-256color`:
 - `VtRis`: does not clear scrollback.
 - `XtermClear`: normal.
 
-### ttysterm
-
 ### Zellij
+
+- Version 0.5.1
+- `TERM` is inherited.
+
+Tested with `xterm-256color` in Alacritty:
+
+- Default: `VtRis`.
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. Doesn’t clear scrollback.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: normal.
+- `XtermClear`: as for `Terminfo`.
 
 
 Recorders
