@@ -995,6 +995,20 @@ With `TERM=xterm-256color`:
 
 ### uuterm
 
+- Version 80
+- There’s no scrollback at all, so it’s impossible to know how things are really handled, but 🤷.
+
+With native `TERM=uuterm`:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
+With `TERM=xterm-256color`: very broken, but clearing works as normal.
+
 ### Viter
 
 - Version r166.c8ca21a
