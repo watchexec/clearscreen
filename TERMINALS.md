@@ -934,6 +934,17 @@ Native `TERM` is `xterm-256color`.
 
 ### Tilix
 
+- Version 1.9.4
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Tinyterm
 
 - VTE-based
