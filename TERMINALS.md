@@ -1223,7 +1223,33 @@ Native `TERM` is `xterm-256color`.
 
 ### Byobu
 
+- Uses Tmux underneath
+
 ### Dvtm
+
+- Version 0.15
+
+With native `TERM=dvtm-265color`:
+
+- Default: `Terminfo`. (The least worse option.)
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. Doesn’t clear scrollback.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: terminfo does not support E3.
+- `VtRis`: does nothing.
+- `XtermClear`: as for `Terminfo`.
+
+With `TERM=xterm-256color`:
+
+- Default: `Terminfo`.
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. Doesn’t clear scrollback.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: does nothing.
+- `XtermClear`: as for `Terminfo`.
 
 ### Eternal Terminal
 
