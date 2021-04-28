@@ -1041,6 +1041,18 @@ Native `TERM` is `xterm-256color`.
 
 ### Wezterm
 
+- Version 20210405.110924.a5bb5be8
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### WindTerm
 
 ### Wlterm
