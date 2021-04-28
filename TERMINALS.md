@@ -1317,6 +1317,19 @@ With `TERM=xterm-256color`:
 
 ### Tab-rs
 
+- Version 0.5.7
+- Scrollback is inherited from the terminal, not managed internally, so depends on what you have.
+- `TERM` is inherited too, so as long as it passes the escapes out, it will work as the terminal.
+
+Tested with `xterm-256color` in Alacritty:
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Tmux
 
 - Version 3.2
