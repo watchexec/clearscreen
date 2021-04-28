@@ -1152,8 +1152,6 @@ Native `TERM` is `xterm-256color`.
   without scrolling the existing output up, thus losing a screenful of information.
 - `XtermClear`: normal.
 
-### Yeah Console
-
 ### z/Scope
 
 ### Zoc
@@ -1161,6 +1159,19 @@ Native `TERM` is `xterm-256color`.
 ### Zterm
 
 ### Zutty
+
+- Version 0.8
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `VtRis`.
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. Doesn’t clear scrollback.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: normal.
+- `XtermClear`: as for `Terminfo`.
 
 
 Serial terminal emulators?

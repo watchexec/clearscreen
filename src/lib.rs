@@ -385,10 +385,13 @@ impl Default for ClearScreen {
 			// - Kitty does as rxvt does here.
 			// - Tess does support the XtermClear sequence but has a weird scrollbar behaviour,
 			// which does not happen with VtRis.
+			// - Zutty does not support E3, and erases the buffer on clear like rxvt, but does work
+			// properly with VtRis.
 			if term == "syncterm"
-			|| term.contains("rxvt")
-			|| term.contains("kitty")
+				|| term.contains("rxvt")
+				|| term.contains("kitty")
 				|| var("CHROME_DESKTOP").map_or(false, |cd| cd == "tess.desktop")
+				|| varfull("ZUTTY_VERSION")
 			{
 				return Self::VtRis;
 			}
