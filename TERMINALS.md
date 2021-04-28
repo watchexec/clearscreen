@@ -1086,6 +1086,17 @@ With `TERM=xterm-256color`:
 
 ### xiate
 
+- Version 20.07
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Xterm
 
 ### Yaft
