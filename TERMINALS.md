@@ -1209,6 +1209,18 @@ Multiplexers
 
 ### 3mux
 
+- Version 1.1.0
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: **erases the screen like `TerminfoScreen`** and clears scrollback.
+- `VtRis`: does nothing.
+- `XtermClear`: normal.
+
 ### Byobu
 
 ### Dvtm
