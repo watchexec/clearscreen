@@ -821,6 +821,18 @@ Native `TERM` is `xterm-256color`.
 
 ### Terminology
 
+- Version 1.9.0
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Terminus
 
 ### Termistor
