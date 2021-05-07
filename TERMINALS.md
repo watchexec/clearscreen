@@ -174,6 +174,18 @@ Native `TERM` is `xterm-256color`.
 
 ### Bterm
 
+- Version 2.0.0
+
+Native `TERM` is `xterm`.
+
+- Default: `Terminfo`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: normal.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+
 ### Butterfly
 
 - Web-based
