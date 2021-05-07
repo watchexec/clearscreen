@@ -801,6 +801,17 @@ Native `TERM` is `xterm-256color`.
 
 ### Terminal.app (macOS)
 
+- Version 2.10 (433)
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `XtermClear`.
+- `Terminfo`: normal (does not clear scrollback).
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: erases the screen without scrolling up (not abnormal) and does not clear scrollback.
+- `XtermClear`: normal.
+
 ### Terminaleco
 
 ### Terminalpp
