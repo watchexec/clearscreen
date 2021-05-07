@@ -62,6 +62,14 @@ with `xterm-256color` if that’s not been covered yet.
  4. To submit your research, either submit a PR to this file (preferred, you can even do it in the
     GitHub Web UI), or open an issue with your research (I’ll merge it in), or send me an email.
 
+Platforms
+---------
+
+On macOS, the terminfo for `xterm` and variants does not by default include E3, which makes
+`Terminfo` not clear scrollback and `TerminfoScrollback` return an error (E3 not found), even when
+the terminal in question actually does support E3. For that reason, default behaviour on macOS is
+switched to use `XtermClear` if the `TERM` starts with `xterm` and the terminfo doesn’t have E3.
+
 
 Emulator libraries
 ------------------

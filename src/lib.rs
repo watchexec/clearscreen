@@ -404,6 +404,16 @@ impl Default for ClearScreen {
 				return Self::XtermClear;
 			}
 
+			// Default xterm* terminfo on macOS does not include E3, but many terminals support it.
+			if cfg!(target_os = "macos")
+				&& term.starts_with("xterm")
+				&& Database::from_env()
+					.map(|info| info.get::<ResetScrollback>().is_none())
+					.unwrap_or(true)
+			{
+				return Self::XtermClear;
+			}
+
 			if !term.is_empty() {
 				return Self::Terminfo;
 			}
