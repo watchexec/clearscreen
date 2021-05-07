@@ -359,13 +359,6 @@ impl Default for ClearScreen {
 		}
 
 		if let Some(term) = term {
-			if let Some(termp) = term_program {
-				// iTerm2 supports CSI 3J but macOS’s xterm-256color terminfo (its default) doesn’t have E3
-				if term.starts_with("xterm") && termp == "iTerm.app" {
-					return Self::XtermClear;
-				}
-			}
-
 			// These VTE-based terminals support CSI 3J but their own terminfos don’t have E3
 			if (term.starts_with("gnome")
 				&& varfull("GNOME_TERMINAL_SCREEN")
