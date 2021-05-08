@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v1.0.3 (2021-05-08)
+
 - Drop unused `log` dependency.
 - Generalise iTerm workaround from 1.0.1 to default behaviour on macOS when the `TERM` starts with
   `xterm` and the terminfo does not have `E3`.
