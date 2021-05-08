@@ -17,7 +17,7 @@ _Cross-platform terminal screen clearing library._
 [copyright]: ./COPYRIGHT
 [docs]: https://docs.rs/clearscreen
 
-Tested with and tweaked for over 50 different terminals, multiplexers, SSH clients.
+Tested with and tweaked for over 80 different terminals, multiplexers, SSH clients.
 See my research notes in the [TERMINALS.md](./TERMINALS.md) file.
 
 ## Quick start
