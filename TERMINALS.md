@@ -211,7 +211,20 @@ There's no `TERM` variable and no terminfo database.
 - `WindowsConsoleBlank`: does nothing ***BUG!***
 - `WindowsVtClear`: normal.
 
-### ConEMU
+### ConEmu
+
+- Version 210422
+
+There's no `TERM` variable and no terminfo database.
+
+- Default: `WindowsVtClear`.
+- `Terminfo`: there's no TERM nor terminfo database.
+- `TerminfoScreen`: there's no TERM nor terminfo database.
+- `TerminfoScrollback`: there's no TERM nor terminfo database.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+- `Cls`: normal.
+- `WindowsVtClear`: normal.
 
 ### ConsoleZ
 
