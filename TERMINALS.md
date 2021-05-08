@@ -1247,7 +1247,18 @@ Native `TERM` is `xterm-256color`.
 
 ### z/Scope
 
-### Zoc
+### ZOC
+
+- Version 8 (8023)
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `XtermClear`.
+- `Terminfo`: normal.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: normal.
+- `VtRis`: does not clear scrollback.
+- `XtermClear`: normal.
 
 ### Zterm
 
