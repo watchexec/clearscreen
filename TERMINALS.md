@@ -1193,6 +1193,20 @@ Native `TERM` is `xterm-256color`.
 
 ### WindTerm
 
+- Version 2.1.0 (Win10 version)
+
+There's no `TERM` variable and no terminfo database.
+
+- Default: `WindowsVtClear`.
+- `Terminfo`: there's no TERM nor terminfo database.
+- `TerminfoScreen`: there's no TERM nor terminfo database.
+- `TerminfoScrollback`: there's no TERM nor terminfo database.
+- `VtRis`: does not clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `XtermClear`: as for `VtRis`.
+- `Cls`: as for `VtRis`.
+- `WindowsVtClear`: as for `VtRis`.
+
 ### Wlterm
 
 - libtsm-based
