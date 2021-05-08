@@ -41,6 +41,7 @@ date=$(date +%Y-%m-%d)
 echo "Next version to be $newver ($date), creating..."
 
 sed -E -i "s/^## Next.*$/## Next (YYYY-MM-DD)\n\n## v$newver ($date)/1" CHANGELOG.md
+sed -E -i "s/^clearscreen = \"$extver\"/clearscreen = \"$newver\"/1" README.md
 sed -E -i "s/^version = \"$extver\"/version = \"$newver\"/1" Cargo.toml
 
 cargo check
