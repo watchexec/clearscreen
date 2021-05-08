@@ -215,6 +215,19 @@ There's no `TERM` variable and no terminfo database.
 
 ### ConsoleZ
 
+- Version 1.19.0.19104
+
+There's no `TERM` variable and no terminfo database.
+
+- Default: `WindowsVtClear`.
+- `Terminfo`: there's no TERM nor terminfo database.
+- `TerminfoScreen`: there's no TERM nor terminfo database.
+- `TerminfoScrollback`: there's no TERM nor terminfo database.
+- `VtRis`: prints `←c`, does nothing else.
+- `XtermClear`: prints `←[H←[2J←[3J`, does nothing else.
+- `Cls`: normal.
+- `WindowsVtClear`: normal.
+
 ### Cool Retro Term
 
 - Version 1.1.1
