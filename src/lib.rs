@@ -341,7 +341,7 @@ impl Default for ClearScreen {
 		let term = var("TERM").ok();
 		let term = term.as_ref();
 		let term_program = var("TERM_PROGRAM").ok();
-		let term_program = term_program.as_ref();
+		let _term_program = term_program.as_ref();
 		let terminfo = varfull("TERMINFO");
 
 		if cfg!(windows) {
