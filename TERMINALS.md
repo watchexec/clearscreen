@@ -610,7 +610,18 @@ Native `TERM` is `xterm`.
 - `VtRis`: doesn’t clear scrollback.
 - `XtermClear`: normal.
 
-### Microsoft Terminal
+### Microsoft Terminal / Windows Terminal
+
+- Version 1.7.1033.0
+
+There's no `TERM` variable and no terminfo database.
+
+- Default: `XtermClear`.
+- `Terminfo`: there's no TERM nor terminfo database.
+- `TerminfoScreen`: there's no TERM nor terminfo database.
+- `TerminfoScrollback`: there's no TERM nor terminfo database.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Miniterm
 
