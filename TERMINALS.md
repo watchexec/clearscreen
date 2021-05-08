@@ -197,7 +197,6 @@ Native `TERM` is `xterm`.
 ### CMD.EXE
 
 - Windows 10 Pro, build 19042.630
-- All tests were done on a fresh instance, to avoid contamination by `WindowsVt`.
 
 There's no `TERM` variable and no terminfo database.
 
@@ -346,6 +345,21 @@ Native `TERM` is `xterm-256color`.
 - For Nokia N9 phones?
 
 ### Fluent Terminal (Windows)
+
+- Version 0.7.5.0
+- Xterm.js-based
+
+There's no `TERM` variable and no terminfo database.
+
+- Default: `WindowsVtClear`.
+- `Terminfo`: there's no TERM nor terminfo database.
+- `TerminfoScreen`: there's no TERM nor terminfo database.
+- `TerminfoScrollback`: there's no TERM nor terminfo database.
+- `VtRis`: does not clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `XtermClear`: as for `VtRis`.
+- `Cls`: as for `VtRis`.
+- `WindowsVtClear`: as for `VtRis`.
 
 ### Foot
 
@@ -1277,6 +1291,8 @@ Native `TERM` is `xterm-256color`.
 - `XtermClear`: normal.
 
 ### z/Scope
+
+- Web-based?
 
 ### ZOC
 
