@@ -496,6 +496,19 @@ Native `TERM` is `xterm-256color`.
 
 ### JuiceSSH
 
+- Version
+
+Native `TERM` is `linux`.
+
+- Default: `Terminfo`.
+- `Terminfo`: does not clear scrollback, appears to clear the screen, but really erases the screen
+  without scrolling the existing output up, thus losing a screenful of information.
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does nothing.
+- `VtRis`: does nothing
+- `XtermClear`: as for `Terminfo`.
+
 ### Kermit
 
 - Version 3.4
