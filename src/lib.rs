@@ -342,14 +342,13 @@ impl Default for ClearScreen {
 
 		let term = var("TERM").ok();
 		let term = term.as_ref();
-		let terminfo = varfull("TERMINFO");
 
 		if cfg!(windows) {
 			return if is_microsoft_terminal() {
 				Self::XtermClear
 			} else if is_windows_10() {
 				Self::WindowsVtClear
-			} else if term.is_some() && terminfo {
+			} else if term.is_some() && varfull("TERMINFO") {
 				Self::Terminfo
 			} else if term.is_some() && which("tput").is_ok() {
 				Self::TputClear
