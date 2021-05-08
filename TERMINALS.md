@@ -690,6 +690,21 @@ There's no `TERM` variable and no terminfo database.
 
 ### MinTTY (Windows)
 
+- Version 3.1.6
+- PuTTY-based?
+- Via Git-Bash
+
+Native `TERM` is `xterm`
+
+- Default: `WindowsVtClear`.
+- `Terminfo`: there's no terminfo database.
+- `TerminfoScreen`: there's no terminfo database.
+- `TerminfoScrollback`: there's no terminfo database.
+- `VtRis`: normal.
+- `XtermClear`: normal.
+- `Cls`: does nothing.
+- `WindowsVtClear`: normal.
+
 ### Miro
 
 - Version 0.2.0
