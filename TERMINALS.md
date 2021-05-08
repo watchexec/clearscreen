@@ -621,6 +621,10 @@ Native `TERM` is `xterm`.
 
 ### Miro
 
+- Version 0.2.0
+
+
+
 ### MLTERM
 
 - Version 3.9.0
@@ -966,6 +970,22 @@ Native `TERM` is `xterm`.
 - `XtermClear`: as for `Terminfo`.
 
 ### Termy
+
+- Version 0.3.0
+- By nature, the prompt remains at the top, and every command clears the screen.
+- However, running a shell inside the terminal makes it behave as usually expected, so that's how
+  this is tested.
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `XtermClear`.
+- `Terminfo`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information. (Doesn’t clear scrollback.)
+- `TerminfoScreen`: appears to clear the screen, but really erases the screen without scrolling the
+  existing output up, thus losing a screenful of information.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: normal.
+- `XtermClear`: normal.
 
 ### Terra
 
