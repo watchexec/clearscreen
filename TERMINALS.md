@@ -115,7 +115,7 @@ Emulators
 
 - Version 0.7.2
 
-With `TERM=alacritty`:
+With native `TERM=alacritty`:
 
 - Default: `Terminfo`.
 - `Terminfo`: normal.
@@ -257,6 +257,8 @@ Native `TERM` is `xterm-256color`.
 
 ### domterm
 
+- Web-based?
+
 ### dwt
 
 - Version 0.6.0
@@ -322,6 +324,8 @@ Native `TERM` is `xterm-256color`.
 ### fbpad
 
 ### Fingerterm
+
+- For Nokia N9 phones?
 
 ### Fluent Terminal (Windows)
 
@@ -416,6 +420,17 @@ With `TERM=xterm-256color`:
 - Web-based
 
 ### iTerm2
+
+- Version 3.3.12
+
+Native `TERM` is `xterm-256color`.
+
+- Default: `XtermClear`.
+- `Terminfo`: normal (does not clear scrollback).
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: does not clear scrollback (behaves like `TerminfoScreen`).
+- `XtermClear`: normal.
 
 ### jbxvt
 
@@ -520,6 +535,8 @@ Native `TERM` is `xterm-256color`.
 
 ### Literm
 
+- fingerterm-based?
+
 ### lwt
 
 - Version 2020-12-02
@@ -542,7 +559,33 @@ Native `TERM` is `xterm-256color`.
 
 ### MacTerm
 
+- Version 5 for macOS =>10.15 in development, I don't have an older mac to test 4.x.
+
 ### MacWise
+
+- Version 21.6
+- In VT100 emulation mode
+- Does not have a native `TERM`.
+
+With `TERM=vt100`:
+
+- Default: `Terminfo`.
+- `Terminfo`: erases the screen without scrolling up, thus losing info, then inserts a screenful of
+  whitespace, then scrolls up. Does not clear scrollback.
+- `TerminfoScreen`: as for `Terminfo`.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: does not clear scrollback, does not reset style.
+- `XtermClear`: scrolls screen up, then fills the screen with whitespace, places the cursor at the
+  bottom right, then prints `3.2$`, then does that once again. (???)
+
+With `TERM=xterm-256color`:
+
+- Default: `XtermClear`. (`Terminfo` would be better, but impossible to detect.)
+- `Terminfo`: normal. Does not clear scrollback.
+- `TerminfoScreen`: normal.
+- `TerminfoScrollback`: does not support E3.
+- `VtRis`: does not clear scrollback, does not reset style.
+- `XtermClear`: as with `TERM=vt100`.
 
 ### Mantid
 
