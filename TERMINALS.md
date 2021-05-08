@@ -681,8 +681,6 @@ There's no `TERM` variable and no terminfo database.
 
 - Version 0.2.0
 
-
-
 ### MLTERM
 
 - Version 3.9.0
@@ -699,7 +697,33 @@ Native `TERM` is `xterm`.
   without scrolling the existing output up, thus losing a screenful of information.
 - `XtermClear`: as for `Terminfo`.
 
-### MobaXTerm
+### MobaXterm
+
+- Version 21.1 build 4628 Home Edition
+
+There's no `TERM` variable and no terminfo database.
+
+- Default: `WindowsVtClear`.
+- `Terminfo`: there's no TERM nor terminfo database.
+- `TerminfoScreen`: there's no TERM nor terminfo database.
+- `TerminfoScrollback`: there's no TERM nor terminfo database.
+- `VtRis`: prints `←c`, does nothing else.
+- `XtermClear`: prints `←[H←[2J←[3J`, does nothing else.
+- `Cls`: doesn’t clear scrollback.
+- `WindowsVtClear`: doesn’t clear scrollback.
+
+#### With built-in Bash mode
+
+Native `TERM` is `xterm`.
+
+- Default: `WindowsVtClear`.
+- `Terminfo`: there's no terminfo database.
+- `TerminfoScreen`: there's no terminfo database.
+- `TerminfoScrollback`: there's no terminfo database.
+- `VtRis`: doesn’t clear scrollback.
+- `XtermClear`: normal.
+- `Cls`: doesn’t clear scrollback.
+- `WindowsVtClear`: normal.
 
 ### mrxvt
 
