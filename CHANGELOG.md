@@ -3,6 +3,10 @@
 ## Next (YYYY-MM-DD)
 
 - Drop unused `log` dependency.
+- Generalise iTerm workaround from 1.0.1 to default behaviour on macOS when the `TERM` starts with
+  `xterm` and the terminfo does not have `E3`.
+- Hide `WindowsConsoleClear` and `WindowsConsoleBlank` under an undocumented feature as they are
+  buggy/do not work as per my testing on Win10. `WindowsVtClear` and `Cls` are sufficient for clear.
 
 ## v1.0.2 (2021-04-29)
 

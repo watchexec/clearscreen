@@ -17,7 +17,9 @@ fn main() -> Result<(), Error> {
 			"Cls" => ClearScreen::Cls,
 			"WindowsVt" => ClearScreen::WindowsVt,
 			"WindowsVtClear" => ClearScreen::WindowsVtClear,
+			#[cfg(feature = "windows-console")]
 			"WindowsConsoleClear" => ClearScreen::WindowsConsoleClear,
+			#[cfg(feature = "windows-console")]
 			"WindowsConsoleBlank" => ClearScreen::WindowsConsoleBlank,
 			"WindowsCooked" => ClearScreen::WindowsCooked,
 			"VtRis" => ClearScreen::VtRis,

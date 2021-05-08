@@ -192,6 +192,7 @@ pub enum ClearScreen {
 	/// as the equivalent to CMD.EXE's `cls` command.
 	///
 	/// Does nothing on non-Windows targets.
+	#[cfg(feature = "windows-console")]
 	WindowsConsoleClear,
 
 	/// Uses Windows Console function to blank the screen state.
@@ -204,6 +205,7 @@ pub enum ClearScreen {
 	/// This is described here: https://docs.microsoft.com/en-us/windows/console/clearing-the-screen#example-3
 	///
 	/// Does nothing on non-Windows targets.
+	#[cfg(feature = "windows-console")]
 	WindowsConsoleBlank,
 
 	/// Uses Windows Console function to disable raw mode.
@@ -340,8 +342,6 @@ impl Default for ClearScreen {
 
 		let term = var("TERM").ok();
 		let term = term.as_ref();
-		let term_program = var("TERM_PROGRAM").ok();
-		let _term_program = term_program.as_ref();
 		let terminfo = varfull("TERMINFO");
 
 		if cfg!(windows) {
@@ -576,7 +576,9 @@ impl ClearScreen {
 				Self::XtermClear.clear_to(w)?;
 				vtres?;
 			}
+			#[cfg(feature = "windows-console")]
 			Self::WindowsConsoleClear => win::clear()?,
+			#[cfg(feature = "windows-console")]
 			Self::WindowsConsoleBlank => win::blank()?,
 			Self::WindowsCooked => win::cooked()?,
 			Self::VtRis => {
@@ -761,18 +763,25 @@ mod win {
 			processenv::GetStdHandle,
 			winbase::{VerifyVersionInfoW, STD_OUTPUT_HANDLE},
 			wincon::{
-				FillConsoleOutputAttribute, FillConsoleOutputCharacterW,
-				GetConsoleScreenBufferInfo, ScrollConsoleScreenBufferW, SetConsoleCursorPosition,
-				CONSOLE_SCREEN_BUFFER_INFO, ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT,
-				ENABLE_PROCESSED_INPUT, ENABLE_VIRTUAL_TERMINAL_PROCESSING,
-				PCONSOLE_SCREEN_BUFFER_INFO,
+				ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT, ENABLE_PROCESSED_INPUT,
+				ENABLE_VIRTUAL_TERMINAL_PROCESSING,
 			},
-			wincontypes::{CHAR_INFO_Char, CHAR_INFO, COORD, SMALL_RECT},
 			winnt::{
-				VerSetConditionMask, HANDLE, OSVERSIONINFOEXW, POSVERSIONINFOEXW, SHORT, ULONGLONG,
+				VerSetConditionMask, HANDLE, OSVERSIONINFOEXW, POSVERSIONINFOEXW, ULONGLONG,
 				VER_GREATER_EQUAL, VER_MAJORVERSION, VER_MINORVERSION, VER_SERVICEPACKMAJOR,
 			},
 		},
+	};
+
+	#[cfg(feature = "windows-console")]
+	use winapi::um::{
+		wincon::{
+			FillConsoleOutputAttribute, FillConsoleOutputCharacterW, GetConsoleScreenBufferInfo,
+			ScrollConsoleScreenBufferW, SetConsoleCursorPosition, CONSOLE_SCREEN_BUFFER_INFO,
+			PCONSOLE_SCREEN_BUFFER_INFO,
+		},
+		wincontypes::{CHAR_INFO_Char, CHAR_INFO, COORD, SMALL_RECT},
+		winnt::SHORT,
 	};
 
 	fn console_handle() -> Result<HANDLE, Error> {
@@ -782,6 +791,7 @@ mod win {
 		}
 	}
 
+	#[cfg(feature = "windows-console")]
 	fn buffer_info(console: HANDLE) -> Result<CONSOLE_SCREEN_BUFFER_INFO, Error> {
 		let csbi: PCONSOLE_SCREEN_BUFFER_INFO = ptr::null_mut();
 		if unsafe { GetConsoleScreenBufferInfo(console, csbi) } == FALSE {
@@ -812,6 +822,7 @@ mod win {
 	}
 
 	// Ref https://docs.microsoft.com/en-us/windows/console/clearing-the-screen#example-2
+	#[cfg(feature = "windows-console")]
 	pub(crate) fn clear() -> Result<(), Error> {
 		let console = console_handle()?;
 		let csbi = buffer_info(console)?;
@@ -859,6 +870,7 @@ mod win {
 	}
 
 	// Ref https://docs.microsoft.com/en-us/windows/console/clearing-the-screen#example-3
+	#[cfg(feature = "windows-console")]
 	pub(crate) fn blank() -> Result<(), Error> {
 		let console = console_handle()?;
 
@@ -1107,10 +1119,12 @@ mod win {
 		Ok(())
 	}
 
+	#[cfg(feature = "windows-console")]
 	pub(crate) fn clear() -> Result<(), Error> {
 		Ok(())
 	}
 
+	#[cfg(feature = "windows-console")]
 	pub(crate) fn blank() -> Result<(), Error> {
 		Ok(())
 	}

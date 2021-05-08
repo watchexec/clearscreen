@@ -15,6 +15,9 @@ readme = "README.md"
 edition = "2018"
 exclude = ["/bin", "/.github"]
 
+[features]
+windows-console = []
+
 [dependencies]
 terminfo = "0.7.3"
 thiserror = "1.0.24"
