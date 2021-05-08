@@ -28,6 +28,8 @@ To contribute entries:
   - `TerminfoScrollback`: only scrollback cleared
   - `VtRis`: screen and scrollback cleared, and (at least some modes of) terminal reset
   - `XtermClear`: screen and scrollback cleared
+  - `Cls`: screen and scrollback cleared
+  - `WindowsVtClear`: screen and scrollback cleared
 - There is zero tolerance for advertising via this document.
 
 How to test:
@@ -193,6 +195,22 @@ Native `TERM` is `xterm`.
 ### Cathode
 
 ### CMD.EXE
+
+- Windows 10 Pro, build 19042.630
+- All tests were done on a fresh instance, to avoid contamination by `WindowsVt`.
+
+There's no `TERM` variable and no terminfo database.
+
+- Default: `WindowsVtClear`.
+- `Terminfo`: there's no TERM nor terminfo database.
+- `TerminfoScreen`: there's no TERM nor terminfo database.
+- `TerminfoScrollback`: there's no TERM nor terminfo database.
+- `VtRis`: prints `←c` and does nothing else.
+- `XtermClear`: prints `←[H←[2J←[3J` and does nothing else.
+- `Cls`: normal.
+- `WindowsConsoleClear`: does nothing ***BUG!***
+- `WindowsConsoleBlank`: does nothing ***BUG!***
+- `WindowsVtClear`: normal.
 
 ### ConEMU
 
@@ -622,6 +640,8 @@ There's no `TERM` variable and no terminfo database.
 - `TerminfoScrollback`: there's no TERM nor terminfo database.
 - `VtRis`: normal.
 - `XtermClear`: normal.
+- `WindowsVtClear`: normal.
+- `Cls`: normal.
 
 ### Miniterm
 
