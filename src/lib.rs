@@ -441,6 +441,7 @@ impl ClearScreen {
 
 				if let Some(seq) = info.get::<capability::ClearScreen>() {
 					seq.expand().with(&mut ctx).to(&mut w)?;
+					w.flush()?;
 				} else {
 					return Err(Error::TerminfoCap("clear"));
 				}
@@ -452,7 +453,8 @@ impl ClearScreen {
 			Self::TerminfoScreen => {
 				let info = Database::from_env()?;
 				if let Some(seq) = info.get::<capability::ClearScreen>() {
-					seq.expand().to(w)?;
+					seq.expand().to(&mut w)?;
+					w.flush()?;
 				} else {
 					return Err(Error::TerminfoCap("clear"));
 				}
@@ -460,7 +462,8 @@ impl ClearScreen {
 			Self::TerminfoScrollback => {
 				let info = Database::from_env()?;
 				if let Some(seq) = info.get::<ResetScrollback>() {
-					seq.expand().to(w)?;
+					seq.expand().to(&mut w)?;
+					w.flush()?;
 				} else {
 					return Err(Error::TerminfoCap("E3"));
 				}
@@ -487,6 +490,8 @@ impl ClearScreen {
 					seq.expand().with(&mut ctx).to(&mut w)?;
 				}
 
+				w.flush()?;
+
 				if reset {
 					return Ok(());
 				}
@@ -508,6 +513,8 @@ impl ClearScreen {
 					seq.expand().with(&mut ctx).to(&mut w)?;
 				}
 
+				w.flush()?;
+
 				if !reset {
 					return Err(Error::TerminfoCap("reset"));
 				}
@@ -525,6 +532,8 @@ impl ClearScreen {
 
 				w.write_all(CSI)?;
 				w.write_all(ERASE_SCROLLBACK)?;
+
+				w.flush()?;
 			}
 			Self::XtermReset => {
 				const STR: &[u8] = b"!p";
@@ -550,6 +559,8 @@ impl ClearScreen {
 
 				w.write_all(CSI)?;
 				w.write_all(RESET_MARGINS)?;
+
+				w.flush()?;
 			}
 			Self::TputClear => {
 				let status = Command::new("tput").arg("clear").status()?;
@@ -583,11 +594,13 @@ impl ClearScreen {
 			Self::VtRis => {
 				w.write_all(ESC)?;
 				w.write_all(RIS)?;
+				w.flush()?;
 			}
 			Self::VtLeaveAlt => {
 				const LEAVE_ALT: &[u8] = b"?1049l";
 				w.write_all(CSI)?;
 				w.write_all(LEAVE_ALT)?;
+				w.flush()?;
 			}
 			Self::VtCooked => unix::vt_cooked()?,
 			Self::VtWellDone => unix::vt_well_done()?,

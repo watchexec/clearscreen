@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+- Fix [#1](https://github.com/watchexec/clearscreen/issues/1): need to flush after writing sequences.
+
 ## v1.0.3 (2021-05-08)
 
 - Drop unused `log` dependency.
