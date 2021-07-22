@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v1.0.6 (2021-07-22)
+
 - Omit unsupported UTF8 input flag on non-Linux
 
 ## v1.0.5 (2021-07-22)
