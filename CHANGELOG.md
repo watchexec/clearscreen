@@ -2,7 +2,11 @@
 
 ## Next (YYYY-MM-DD)
 
+- Omit unsupported UTF8 input flag on non-Linux
+
 ## v1.0.5 (2021-07-22)
+
+- Update to nix 0.22
 
 ## v1.0.4 (2021-05-22)
 

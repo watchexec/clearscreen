@@ -718,12 +718,18 @@ mod unix {
 
 	pub(crate) fn vt_well_done() -> Result<(), Error> {
 		write_termios(|t| {
-			t.input_flags.insert(
+			let mut inserts =
 				InputFlags::BRKINT
-					| InputFlags::ICRNL | InputFlags::IUTF8
-					| InputFlags::IGNPAR | InputFlags::IMAXBEL
-					| InputFlags::ISTRIP | InputFlags::IXON,
-			);
+					| InputFlags::ICRNL | InputFlags::IGNPAR
+					| InputFlags::IMAXBEL
+					| InputFlags::ISTRIP | InputFlags::IXON;
+
+			#[cfg(any(target_os = "android", target_os = "linux", target_os = "macos"))]
+			{
+				inserts |= InputFlags::IUTF8;
+			}
+
+			t.input_flags.insert(inserts);
 			t.output_flags
 				.insert(OutputFlags::ONLCR | OutputFlags::OPOST);
 			t.control_flags.insert(ControlFlags::CREAD);
