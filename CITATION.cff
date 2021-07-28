@@ -1,0 +1,16 @@
+# YAML 1.2
+---
+cff-version: "1.1.0"
+message: If you use this software, please cite it using these metadata.
+
+title: ClearScreen
+version: 1.0.6
+date-released: 2021-07-22
+
+repository-code: https://github.com/watchexec/clearscreen
+license: Apache-2.0 OR MIT
+
+authors:
+  - family-names: Saparelli
+    given-names: Félix
+...
