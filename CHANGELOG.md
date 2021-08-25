@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v1.0.7 (2021-08-26)
+
 - Flush after E3 sequence in `Terminfo` ([#4](https://github.com/watchexec/clearscreen/issues/4)).
 
 ## v1.0.6 (2021-07-22)
