@@ -2,13 +2,15 @@
 
 ## Next (YYYY-MM-DD)
 
+- Flush after E3 sequence in `Terminfo` ([#4](https://github.com/watchexec/clearscreen/issues/4)).
+
 ## v1.0.6 (2021-07-22)
 
-- Omit unsupported UTF8 input flag on non-Linux
+- Omit unsupported UTF8 input flag on non-Linux.
 
 ## v1.0.5 (2021-07-22)
 
-- Update to nix 0.22
+- Update to nix 0.22.
 
 ## v1.0.4 (2021-05-22)
 

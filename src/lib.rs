@@ -447,7 +447,8 @@ impl ClearScreen {
 				}
 
 				if let Some(seq) = info.get::<ResetScrollback>() {
-					seq.expand().with(&mut ctx).to(w)?;
+					seq.expand().with(&mut ctx).to(&mut w)?;
+					w.flush()?;
 				}
 			}
 			Self::TerminfoScreen => {
