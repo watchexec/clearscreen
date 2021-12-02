@@ -35,22 +35,35 @@ jobs:
           command: check
           args: --features windows-console
           # check to make sure it keeps compiling, but this is unsupported buggy code for now
+
       - uses: actions-rs/cargo@v1
         if: matrix.platform != 'windows'
         with:
           command: test
-      - run: |
-          cargo test --doc
-          cargo test --test win10
-          cargo test --test platformed terminfo
-          cargo test --test platformed xterm
-          cargo test --test platformed tput
-          cargo test --test platformed windows_cls
-          cargo test --test platformed vt_ris
-          # I've absolutely tested the windows_vt things LOCALLY but they DON'T WORK IN CI
-          # I don't know why and at this point I'm very very tired. If you know, help pls.
-        if: matrix.platform == 'windows'
+      - if: matrix.platform == 'windows'
         shell: powershell
+        run: cargo test --doc
+      - if: matrix.platform == 'windows'
+        shell: powershell
+        run: cargo test --test win10
+      - if: matrix.platform == 'windows'
+        shell: powershell
+        run: cargo test --test platformed terminfo
+      - if: matrix.platform == 'windows'
+        shell: powershell
+        run: cargo test --test platformed xterm
+      - if: matrix.platform == 'windows'
+        shell: powershell
+        run: cargo test --test platformed tput
+      - if: matrix.platform == 'windows'
+        shell: powershell
+        run: cargo test --test platformed windows_cls
+      - if: matrix.platform == 'windows'
+        shell: powershell
+        run: cargo test --test platformed vt_ris
+      # I've absolutely tested the windows_vt things LOCALLY but they DON'T WORK IN CI
+      # I don't know why and at this point I'm very very tired. If you know, help pls.
+
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
