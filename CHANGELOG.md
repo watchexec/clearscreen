@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v1.0.9 (2021-12-02)
+
 - Change CI test to test Windows 10 detection with a manifested test executable.
 - Clarify in documentation the expected behaviour of `is_windows_10()` and what is or not a bug.
 
