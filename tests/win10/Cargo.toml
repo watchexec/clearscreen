@@ -1,0 +1,10 @@
+[package]
+name = "clearscreen-test-win10"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+clearscreen = { path = "../.." }
+
+[build-dependencies]
+embed-resource = "1.6.1"
