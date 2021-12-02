@@ -769,7 +769,7 @@ mod unix {
 mod win {
 	use super::Error;
 
-	use std::{convert::TryFrom, io, mem::size_of, process::Command, ptr};
+	use std::{convert::TryFrom, io, mem::size_of, ptr};
 
 	use winapi::{
 		shared::minwindef::{DWORD, FALSE},
@@ -1059,17 +1059,6 @@ mod win {
 		}
 	}
 
-	// check for PackageManagement cmdlet, which was introduced in Win10
-	#[inline]
-	fn pwsh_package_management() -> Result<bool, Error> {
-		Ok(Command::new("powershell.exe")
-			.arg("-Command")
-			.arg("Get-Command -Module PackageManagement")
-			.output()?
-			.status
-			.success())
-	}
-
 	// attempt to set the bit, then undo it
 	fn vt_attempt() -> Result<bool, Error> {
 		let stdout = console_handle()?;
@@ -1112,7 +1101,7 @@ mod win {
 }
 
 #[cfg(not(unix))]
-#[allow(clippy::clippy::unnecessary_wraps)]
+#[allow(clippy::unnecessary_wraps)]
 mod unix {
 	use super::Error;
 
@@ -1126,7 +1115,7 @@ mod unix {
 }
 
 #[cfg(not(windows))]
-#[allow(clippy::clippy::unnecessary_wraps)]
+#[allow(clippy::unnecessary_wraps)]
 mod win {
 	use super::Error;
 
