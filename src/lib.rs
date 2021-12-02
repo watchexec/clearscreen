@@ -635,9 +635,10 @@ pub fn is_microsoft_terminal() -> bool {
 /// However, detecting Windows ≥10 is not trivial. To mitigate broken programs that incorrectly
 /// perform version shimming, Microsoft has deprecated most ways to obtain the version of Windows by
 /// making the relevant APIs _lie_ unless the calling executable [embeds a manifest that explicitely
-/// opts-in to support Windows 10](https://docs.microsoft.com/en-us/windows/win32/sysinfo/targeting-your-application-at-windows-8-1).
+/// opts-in to support Windows 10][manifesting].
 ///
-/// To be clear, **this is the proper way to go.** If you are writing an application which uses this
+/// To be clear, **this is the proper way to go**, and while this function tries, it may return
+/// false under some Win10s if you don't manifest. If you are writing an application which uses this
 /// library, or indeed any application targeting Windows at all, you should embed such a manifest
 /// (and take that opportunity to opt-in to long path support, see e.g. [watchexec#163]). If you are
 /// writing a library on top of this one, it is your responsibility to communicate this requirement
@@ -656,6 +657,17 @@ pub fn is_microsoft_terminal() -> bool {
 /// behaviour may change without notice. Additionally, this will always return false if the library
 /// was compiled for a non-Windows target, even if e.g. it’s running under WSL in a Windows 10 host.
 ///
+/// TL;DR:
+///
+/// - Runs on Windows ≥10 without manifest and returns `true`: good, expected behaviour.
+/// - Runs on Windows ≥10 without manifest and returns `false`: **not a bug**, please manifest.
+/// - Runs on Windows ≥10 with manifest and returns `true`: good, expected behaviour.
+/// - Runs on Windows ≥10 with manifest and returns `false`: **is a bug**, please report it.
+/// - Runs on Windows <10 and returns `true`: **is a bug**, please report it. [ex #5]
+/// - Runs on Windows <10 and returns `false`: good, expected behaviour.
+///
+/// [ex #5]: https://github.com/watchexec/clearscreen/issues/5
+/// [manifesting]: https://docs.microsoft.com/en-us/windows/win32/sysinfo/targeting-your-application-at-windows-8-1
 /// [watchexec#163]: https://github.com/watchexec/watchexec/issues/163
 pub fn is_windows_10() -> bool {
 	win::is_windows_10()
