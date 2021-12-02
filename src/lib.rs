@@ -1107,10 +1107,6 @@ mod win {
 			return true;
 		}
 
-		if pwsh_package_management().unwrap_or(false) {
-			return true;
-		}
-
 		vt_attempt().unwrap_or(false)
 	}
 }

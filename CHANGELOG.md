@@ -2,6 +2,9 @@
 
 ## Next (YYYY-MM-DD)
 
+- Stop checking powershell's `PackageManagement` capability as a Win10 check
+  ([#5](https://github.com/watchexec/clearscreen/issues/5)).
+
 ## v1.0.7 (2021-08-26)
 
 - Flush after E3 sequence in `Terminfo` ([#4](https://github.com/watchexec/clearscreen/issues/4)).
