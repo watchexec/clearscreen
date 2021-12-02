@@ -1,6 +1,6 @@
 [package]
 name = "clearscreen"
-version = "1.0.7"
+version = "1.0.8"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
 license = "Apache-2.0 OR MIT"

@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v1.0.8 (2021-12-02)
+
 - Stop checking powershell's `PackageManagement` capability as a Win10 check
   ([#5](https://github.com/watchexec/clearscreen/issues/5)).
 
