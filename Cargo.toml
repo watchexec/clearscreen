@@ -24,7 +24,9 @@ thiserror = "1.0.24"
 which = "4.1.0"
 
 [target.'cfg(unix)'.dependencies.nix]
-version = "0.22.0"
+version = "0.24.1"
+default-features = false
+features = ["fs", "term"]
 
 [target.'cfg(windows)'.dependencies.winapi]
 version = "0.3.9"
