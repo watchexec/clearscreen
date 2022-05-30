@@ -1,8 +1,8 @@
-[![Crate release version](https://flat.badgen.net/crates/v/clearscreen)](https://crates.io/crates/clearscreen)
-[![Crate license: Apache 2.0 or MIT](https://flat.badgen.net/badge/license/Apache%202.0%20or%20MIT)][copyright]
-![MSRV: 1.51.0 (breaking)](https://flat.badgen.net/badge/MSRV/1.51.0%20%28breaking%29/green)
-[![CI status](https://github.com/watchexec/clearscreen/actions/workflows/check.yml/badge.svg)](https://github.com/watchexec/clearscreen/actions/workflows/check.yml)
-[![Uses Caretaker Maintainership](https://flat.badgen.net/badge/Caretaker/Maintainership%20👥%20/purple)][caretaker]
+[![Crate release version](https://badgen.net/crates/v/clearscreen)](https://crates.io/crates/clearscreen)
+[![Crate license: Apache 2.0 or MIT](https://badgen.net/badge/license/Apache%202.0%20or%20MIT)][copyright]
+![MSRV: 1.51.0 (breaking)](https://badgen.net/badge/MSRV/1.51.0%20%28breaking%29/green)
+[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/45671)
+[![CI status on main branch](https://github.com/watchexec/clearscreen/actions/workflows/main.yml/badge.svg)](https://github.com/watchexec/clearscreen/actions/workflows/main.yml)
 
 # ClearScreen
 
@@ -10,10 +10,8 @@ _Cross-platform terminal screen clearing library._
 
 - **[API documentation][docs]**.
 - [Dual-licensed][copyright] with Apache 2.0 and MIT.
-- Uses [Caretaker Maintainership][caretaker].
 - Minimum Supported Rust Version: 1.51.0.
 
-[caretaker]: ./CARETAKERS.md
 [copyright]: ./COPYRIGHT
 [docs]: https://docs.rs/clearscreen
 

@@ -1,0 +1,28 @@
+name: Main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check:
+    strategy:
+      matrix:
+        include:
+          - platform: macos
+          - platform: ubuntu
+          - platform: windows
+
+    name: Check on ${{ matrix.platform }}
+    runs-on: "${{ matrix.platform }}-latest"
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check

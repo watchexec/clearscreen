@@ -1,22 +1,17 @@
+name: PR feedback
 on:
   pull_request:
-  push:
-    branches:
-      - main
-      - try/**
-
-name: Checks & Tests
 
 jobs:
-  check:
+  clippy:
     strategy:
       matrix:
-        platform:
-          - ubuntu
-          - windows
-          - macos
+        include:
+          - platform: macos
+          - platform: ubuntu
+          - platform: windows
 
-    name: Test on ${{ matrix.platform }}
+    name: Clippy on ${{ matrix.platform }}
     runs-on: "${{ matrix.platform }}-latest"
 
     steps:
@@ -26,59 +21,42 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+
       - run: rustup component add clippy
       - uses: actions-rs/cargo@v1
         with:
-          command: check
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --features windows-console
-          # check to make sure it keeps compiling, but this is unsupported buggy code for now
+         command: clippy
 
-      - uses: actions-rs/cargo@v1
-        if: matrix.platform != 'windows'
-        with:
-          command: test
-      - if: matrix.platform == 'windows'
-        shell: powershell
-        run: cargo test --doc
-      - if: matrix.platform == 'windows'
-        shell: powershell
-        run: cargo test --test platformed terminfo
-      - if: matrix.platform == 'windows'
-        shell: powershell
-        run: cargo test --test platformed xterm
-      - if: matrix.platform == 'windows'
-        shell: powershell
-        run: cargo test --test platformed tput
-      - if: matrix.platform == 'windows'
-        shell: powershell
-        run: cargo test --test platformed windows_cls
-      # I've absolutely tested the windows_vt things LOCALLY but they DON'T WORK IN CI
-      # I don't know why and at this point I'm very very tired. If you know, help pls.
-      - if: matrix.platform == 'windows'
-        shell: powershell
-        run: cargo test --test platformed vt_ris
-      - if: matrix.platform == 'windows'
-        shell: powershell
-        run: cd tests/win10; cargo run
-
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-
-  msrv:
-    name: Check on MSRV
+  fmt-check:
+    name: Check formatting
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.51.0
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --check
+
+  windows-console:
+    name: Check windows-console feature compiles
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
           override: true
       - uses: actions-rs/cargo@v1
         with:
           command: check
+          args: --features windows-console
+          # check to make sure it keeps compiling, but this is unsupported buggy code for now
 
