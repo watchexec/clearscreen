@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v1.0.10 (2022-06-01)
+
 - Use BORS.
 - Update to nix 0.24, limit features to only those used ([#6](https://github.com/watchexec/clearscreen/pull/6)).
 
