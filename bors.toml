@@ -1,6 +1,5 @@
 delete_merged_branches = true
 update_base_for_deletes = true
-use_squash_merge = true
 
 status = [
 	"Test on macos with Rust stable",
