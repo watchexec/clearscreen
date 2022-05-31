@@ -59,4 +59,4 @@ jobs:
         run: cargo test --test platformed vt_ris
       - if: "matrix.platform == 'windows'"
         shell: powershell
-        run: cd tests/win10; cargo run
+        run: cd tests/win10; cargo +${{ matrix.toolchain }} run
