@@ -2,6 +2,9 @@
 
 ## Next (YYYY-MM-DD)
 
+- Use BORS.
+- Update to nix 0.24, limit features to only those used ([#6](https://github.com/watchexec/clearscreen/pull/6)).
+
 ## v1.0.9 (2021-12-02)
 
 - Change CI test to test Windows 10 detection with a manifested test executable.
