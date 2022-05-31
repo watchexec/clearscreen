@@ -57,6 +57,8 @@ jobs:
       - if: "matrix.platform == 'windows'"
         shell: powershell
         run: cargo test --test platformed vt_ris
-      - if: "matrix.platform == 'windows'"
+
+      # remove toolchain restriction when bumping msrv above 1.51
+      - if: "matrix.platform == 'windows' && matrix.toolchain == 'stable'"
         shell: powershell
-        run: cd tests/win10; cargo +${{ matrix.toolchain }} run
+        run: cd tests/win10; cargo run
