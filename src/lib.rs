@@ -392,7 +392,9 @@ impl Default for ClearScreen {
 
 			// - screen supports CSI 3J only within the XtermClear sequence, without E3 capability.
 			// - Konsole handles CSI 3J correctly only within the XtermClear sequence.
-			if term.starts_with("screen") || term.starts_with("konsole") {
+			// - assume tmux TERMs are only used within tmux, and avoid the requirement for a functioning terminfo then
+			// - do the same for running inside zellij
+			if term.starts_with("screen") || term.starts_with("konsole") || term.starts_with("tmux") || varfull("ZELLIJ") {
 				return Self::XtermClear;
 			}
 
@@ -406,7 +408,7 @@ impl Default for ClearScreen {
 				return Self::XtermClear;
 			}
 
-			if !term.is_empty() {
+			if !term.is_empty() && Database::from_env().is_ok() {
 				return Self::Terminfo;
 			}
 		}
