@@ -72,6 +72,9 @@ On macOS, the terminfo for `xterm` and variants does not by default include E3, 
 the terminal in question actually does support E3. For that reason, default behaviour on macOS is
 switched to use `XtermClear` if the `TERM` starts with `xterm` and the terminfo doesn’t have E3.
 
+If the terminfo database is not available, `::default()` falls back to `XTermClear` instead of
+supplying a useless `Terminfo`. When testing, it's expected to have a functional terminfo where
+practical.
 
 Emulator libraries
 ------------------

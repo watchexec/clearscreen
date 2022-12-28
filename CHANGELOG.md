@@ -6,6 +6,8 @@
 - Update dependencies.
 - Update to nix 0.26.
 - Change MSRV policy to stable-5 supported, and bump MSRV to 1.60.0.
+- Handle tmux explicitly ([#9](https://github.com/watchexec/clearscreen/pull/9)).
+- Fall back to hardcoded sequence if terminfo is not available ([#9](https://github.com/watchexec/clearscreen/pull/9)).
 
 ## v1.0.10 (2022-06-01)
 
