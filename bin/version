@@ -51,7 +51,7 @@ cargo check
 
 git commit -am "$newver"
 
-echo "Pushing to upstream, make a PR for Bors then release with GH"
+echo "Pushing to upstream, make a PR then release with GH"
 git push -u $upstream release
 
 echo "Deleting local release branch"

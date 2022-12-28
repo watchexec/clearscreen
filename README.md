@@ -1,7 +1,6 @@
 [![Crate release version](https://badgen.net/crates/v/clearscreen)](https://crates.io/crates/clearscreen)
 [![Crate license: Apache 2.0 or MIT](https://badgen.net/badge/license/Apache%202.0%20or%20MIT)][copyright]
 ![MSRV: 1.51.0 (breaking)](https://badgen.net/badge/MSRV/1.51.0%20%28breaking%29/green)
-[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/45671)
 [![CI status on main branch](https://github.com/watchexec/clearscreen/actions/workflows/main.yml/badge.svg)](https://github.com/watchexec/clearscreen/actions/workflows/main.yml)
 
 # ClearScreen
