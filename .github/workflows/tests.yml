@@ -1,27 +1,22 @@
-name: Merge (with Bors)
+name: Tests
 on:
+  workflow_dispatch:
+  pull_request:
   push:
     branches:
-      - staging
-      - trying
+      - main
 
 jobs:
   check:
     strategy:
       matrix:
-        include:
-          - platform: macos
-            toolchain: stable
-          - platform: macos
-            toolchain: 1.51.0
-          - platform: ubuntu
-            toolchain: stable
-          - platform: ubuntu
-            toolchain: 1.51.0
-          - platform: windows
-            toolchain: stable
-          - platform: windows
-            toolchain: 1.51.0
+        platform:
+          - macos
+          - ubuntu
+          - windows
+        toolchain:
+          - stable
+          - 1.51.0
 
     name: Test on ${{ matrix.platform }} with Rust ${{ matrix.toolchain }}
     runs-on: "${{ matrix.platform }}-latest"
