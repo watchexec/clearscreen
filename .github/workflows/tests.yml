@@ -11,11 +11,11 @@ jobs:
     strategy:
       matrix:
         platform:
+          - macos
           - ubuntu
           - windows
         toolchain:
           - stable
-          - 1.51.0
 
     name: Test on ${{ matrix.platform }} with Rust ${{ matrix.toolchain }}
     runs-on: "${{ matrix.platform }}-latest"
