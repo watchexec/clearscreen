@@ -22,37 +22,37 @@ jobs:
     runs-on: "${{ matrix.platform }}-latest"
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: "${{ matrix.toolchain }}"
-          default: true
-      - uses: actions-rs/cargo@v1
-        if: "matrix.platform != 'windows'"
-        with:
-          command: test
-      - if: "matrix.platform == 'windows'"
-        shell: powershell
-        run: cargo test --doc
-      - if: "matrix.platform == 'windows'"
-        shell: powershell
-        run: cargo test --test platformed terminfo
-      - if: "matrix.platform == 'windows'"
-        shell: powershell
-        run: cargo test --test platformed xterm
-      - if: "matrix.platform == 'windows'"
-        shell: powershell
-        run: cargo test --test platformed tput
-      - if: "matrix.platform == 'windows'"
-        shell: powershell
-        run: cargo test --test platformed windows_cls
-      # I've absolutely tested the windows_vt things LOCALLY but they DON'T WORK IN CI
-      # I don't know why and at this point I'm very very tired. If you know, help pls.
-      - if: "matrix.platform == 'windows'"
-        shell: powershell
-        run: cargo test --test platformed vt_ris
+      - uses: actions/checkout@v3
 
+      - name: Configure toolchain
+        run: |
+          rustup toolchain install --profile minimal --no-self-update ${{ matrix.toolchain }}
+          rustup default ${{ matrix.toolchain }}
+
+      - if: "matrix.platform != 'windows'"
+        run: cargo test
+
+      # the enumeration of tests is because windows_vt tests don't work in CI somehow
+      # the Invoke-NativeCommand thing is because powershell is fucking insane
+      # ref: https://stackoverflow.com/questions/11450153/powershell-analogue-of-bashs-set-e
       - if: "matrix.platform == 'windows'"
         shell: powershell
-        run: cd tests/win10; cargo run
+        run: |
+          function Invoke-NativeCommand {
+            $command = $args[0]
+            $arguments = $args[1..($args.Length)]
+            & $command @arguments
+            if ($LastExitCode -ne 0) {
+              Write-Error "Exit code $LastExitCode while running $command $arguments"
+            }
+          }
+
+          Invoke-NativeCommand cargo test --doc
+          Invoke-NativeCommand cargo test --test platformed terminfo
+          Invoke-NativeCommand cargo test --test platformed xterm
+          Invoke-NativeCommand cargo test --test platformed tput
+          Invoke-NativeCommand cargo test --test platformed windows_cls
+          Invoke-NativeCommand cargo test --test platformed vt_ris
+
+          cd tests/win10
+          Invoke-NativeCommand cargo run
