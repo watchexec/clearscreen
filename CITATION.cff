@@ -1,16 +1,15 @@
-# YAML 1.2
----
-cff-version: "1.1.0"
-message: If you use this software, please cite it using these metadata.
+cff-version: 1.2.0
+message: |
+  If you use this software, please cite it using these metadata.
+title: "ClearScreen: a library to clear terminal screens and a research dataset on screen clearing behaviour in terminal emulators"
 
-title: ClearScreen
-version: 2.0.0
+version: "2.0.0"
 date-released: 2022-12-28
 
 repository-code: https://github.com/watchexec/clearscreen
 license: Apache-2.0 OR MIT
 
 authors:
-  - family-names: Saparelli
-    given-names: Félix
-...
+- family-names: Saparelli
+  given-names: Félix
+  orcid: https://orcid.org/0000-0002-2010-630X
