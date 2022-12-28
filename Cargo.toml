@@ -20,7 +20,7 @@ windows-console = []
 
 [dependencies]
 terminfo = "0.7.3"
-thiserror = "1.0.24"
+thiserror = "1.0.34"
 which = "4.1.0"
 
 [target.'cfg(unix)'.dependencies.nix]
