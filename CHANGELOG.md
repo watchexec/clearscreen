@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v2.0.0 (2022-12-28)
+
 - Don't use BORS.
 - Update dependencies.
 - Update to nix 0.26.
