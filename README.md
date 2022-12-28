@@ -1,8 +1,6 @@
 [![Crate release version](https://badgen.net/crates/v/clearscreen)](https://crates.io/crates/clearscreen)
 [![Crate license: Apache 2.0 or MIT](https://badgen.net/badge/license/Apache%202.0%20or%20MIT)][copyright]
-![MSRV: 1.51.0 (breaking)](https://badgen.net/badge/MSRV/1.51.0%20%28breaking%29/green)
-[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/45671)
-[![CI status on main branch](https://github.com/watchexec/clearscreen/actions/workflows/main.yml/badge.svg)](https://github.com/watchexec/clearscreen/actions/workflows/main.yml)
+[![CI status on main branch](https://github.com/watchexec/clearscreen/actions/workflows/tests.yml/badge.svg)](https://github.com/watchexec/clearscreen/actions/workflows/main.yml)
 
 # ClearScreen
 
@@ -10,7 +8,9 @@ _Cross-platform terminal screen clearing library._
 
 - **[API documentation][docs]**.
 - [Dual-licensed][copyright] with Apache 2.0 and MIT.
-- Minimum Supported Rust Version: 1.51.0.
+- Minimum Supported Rust Version: 1.60.0.
+  - Only the last five stable versions are supported.
+  - MSRV increases beyond that range at publish time will not incur major version bumps.
 
 [copyright]: ./COPYRIGHT
 [docs]: https://docs.rs/clearscreen

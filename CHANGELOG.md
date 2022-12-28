@@ -2,6 +2,11 @@
 
 ## Next (YYYY-MM-DD)
 
+- Don't use BORS.
+- Update dependencies.
+- Update to nix 0.26.
+- Change MSRV policy to stable-5 supported, and bump MSRV to 1.60.0.
+
 ## v1.0.10 (2022-06-01)
 
 - Use BORS.
