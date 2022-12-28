@@ -16,7 +16,7 @@ jobs:
           - windows
         toolchain:
           - stable
-          - 1.51.0
+          - 1.60.0
 
     name: Test on ${{ matrix.platform }} with Rust ${{ matrix.toolchain }}
     runs-on: "${{ matrix.platform }}-latest"
@@ -53,7 +53,6 @@ jobs:
         shell: powershell
         run: cargo test --test platformed vt_ris
 
-      # remove toolchain restriction when bumping msrv above 1.51
-      - if: "matrix.platform == 'windows' && matrix.toolchain == 'stable'"
+      - if: "matrix.platform == 'windows'"
         shell: powershell
         run: cd tests/win10; cargo run

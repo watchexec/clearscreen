@@ -12,8 +12,9 @@ homepage = "https://github.com/watchexec/clearscreen"
 repository = "https://github.com/watchexec/clearscreen"
 readme = "README.md"
 
-edition = "2018"
+edition = "2021"
 exclude = ["/bin", "/.github"]
+rust-version = "1.60.0"
 
 [features]
 windows-console = []

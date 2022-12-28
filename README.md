@@ -8,7 +8,7 @@ _Cross-platform terminal screen clearing library._
 
 - **[API documentation][docs]**.
 - [Dual-licensed][copyright] with Apache 2.0 and MIT.
-- Minimum Supported Rust Version: 1.51.0.
+- Minimum Supported Rust Version: 1.60.0.
   - Only the last five stable versions are supported.
   - MSRV increases beyond that range at publish time will not incur major version bumps.
 
