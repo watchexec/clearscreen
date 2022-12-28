@@ -1,11 +1,11 @@
 # Changelog
 
-## Next (YYYY-MM-DD)
+## v1.0.11 (2022-12-28)
+
+This is a special final 1.x release that includes all the 2.0.0 changes except for the breaking ones.
 
 - Don't use BORS.
 - Update dependencies.
-- Update to nix 0.26.
-- Change MSRV policy to stable-5 supported, and bump MSRV to 1.60.0.
 - Handle tmux explicitly ([#9](https://github.com/watchexec/clearscreen/pull/9)).
 - Fall back to hardcoded sequence if terminfo is not available ([#9](https://github.com/watchexec/clearscreen/pull/9)).
 

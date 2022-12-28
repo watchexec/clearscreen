@@ -1,6 +1,6 @@
 [package]
 name = "clearscreen"
-version = "1.0.10"
+version = "1.0.11"
 
 authors = ["Félix Saparelli <felix@passcod.name>"]
 license = "Apache-2.0 OR MIT"
@@ -12,9 +12,8 @@ homepage = "https://github.com/watchexec/clearscreen"
 repository = "https://github.com/watchexec/clearscreen"
 readme = "README.md"
 
-edition = "2021"
+edition = "2018"
 exclude = ["/bin", "/.github"]
-rust-version = "1.60.0"
 
 [features]
 windows-console = []
@@ -25,7 +24,7 @@ thiserror = "1.0.38"
 which = "4.3.0"
 
 [target.'cfg(unix)'.dependencies.nix]
-version = "0.26.1"
+version = "0.24.1"
 default-features = false
 features = ["fs", "term"]
 

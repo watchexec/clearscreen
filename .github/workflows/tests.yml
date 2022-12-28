@@ -16,7 +16,7 @@ jobs:
           - windows
         toolchain:
           - stable
-          - 1.60.0
+          - 1.51.0
 
     name: Test on ${{ matrix.platform }} with Rust ${{ matrix.toolchain }}
     runs-on: "${{ matrix.platform }}-latest"
@@ -54,5 +54,8 @@ jobs:
           Invoke-NativeCommand cargo test --test platformed windows_cls
           Invoke-NativeCommand cargo test --test platformed vt_ris
 
+      - if: "matrix.platform == 'windows' && matrix.toolchain == 'stable'"
+        shell: powershell
+        run: |
           cd tests/win10
-          Invoke-NativeCommand cargo run
+          cargo run
