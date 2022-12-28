@@ -5,7 +5,6 @@
 This is a special final 1.x release that includes all the 2.0.0 changes except for the breaking ones.
 
 - Don't use BORS.
-- Update dependencies.
 - Handle tmux explicitly ([#9](https://github.com/watchexec/clearscreen/pull/9)).
 - Fall back to hardcoded sequence if terminfo is not available ([#9](https://github.com/watchexec/clearscreen/pull/9)).
 
