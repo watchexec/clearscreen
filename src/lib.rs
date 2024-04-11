@@ -708,7 +708,6 @@ mod unix {
 	use super::Error;
 
 	use nix::{
-		libc::STDIN_FILENO,
 		sys::termios::{
 			tcgetattr, tcsetattr, ControlFlags, InputFlags, LocalFlags, OutputFlags,
 			SetArg::TCSANOW, Termios,
@@ -716,7 +715,7 @@ mod unix {
 		unistd::isatty,
 	};
 
-	use std::{fs::OpenOptions, os::unix::prelude::AsRawFd};
+	use std::{fs::OpenOptions, io::stdin, os::fd::AsFd, os::unix::prelude::AsRawFd};
 
 	pub(crate) fn vt_cooked() -> Result<(), Error> {
 		write_termios(|t| {
@@ -759,14 +758,14 @@ mod unix {
 	}
 
 	fn write_termios(f: impl Fn(&mut Termios)) -> Result<(), Error> {
-		if isatty(STDIN_FILENO)? {
-			let mut t = tcgetattr(STDIN_FILENO)?;
+		if isatty(stdin().as_raw_fd())? {
+			let mut t = tcgetattr(stdin().as_fd())?;
 			reset_termios(&mut t);
 			f(&mut t);
-			tcsetattr(STDIN_FILENO, TCSANOW, &t)?;
+			tcsetattr(stdin().as_fd(), TCSANOW, &t)?;
 		} else {
 			let tty = OpenOptions::new().read(true).write(true).open("/dev/tty")?;
-			let fd = tty.as_raw_fd();
+			let fd = tty.as_fd();
 
 			let mut t = tcgetattr(fd)?;
 			reset_termios(&mut t);
@@ -1167,7 +1166,7 @@ impl<'a> Capability<'a> for ResetScrollback<'a> {
 
 	#[inline]
 	fn from(value: Option<&'a Value>) -> Option<Self> {
-		if let Some(&Value::String(ref value)) = value {
+		if let Some(Value::String(value)) = value {
 			Some(Self(Cow::Borrowed(value)))
 		} else {
 			None
