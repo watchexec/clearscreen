@@ -4,6 +4,7 @@
 
 - Update to nix 0.28. ([#21](https://github.com/watchexec/clearscreen/pull/21), thanks [@charliermarsh](https://github.com/charliermarsh))
 - Update to which 6. ([#19](https://github.com/watchexec/clearscreen/pull/19))
+- Update MSRV to 1.72.
 
 ## v2.0.1 (2023-04-04)
 
