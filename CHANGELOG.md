@@ -2,6 +2,8 @@
 
 ## Next (YYYY-MM-DD)
 
+## v3.0.0 (2024-04-11)
+
 - Update to nix 0.28. ([#21](https://github.com/watchexec/clearscreen/pull/21), thanks [@charliermarsh](https://github.com/charliermarsh))
 - Update to which 6. ([#19](https://github.com/watchexec/clearscreen/pull/19))
 - Update MSRV to 1.72.
