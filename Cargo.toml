@@ -20,7 +20,7 @@ rust-version = "1.72.0"
 windows-console = []
 
 [dependencies]
-terminfo = "0.8.0"
+terminfo = "0.9.0"
 thiserror = "1.0.38"
 which = "6.0.1"
 
