@@ -22,7 +22,7 @@ windows-console = []
 [dependencies]
 terminfo = "0.9.0"
 thiserror = "1.0.38"
-which = "6.0.1"
+which = "7.0.0"
 
 [target.'cfg(unix)'.dependencies.nix]
 version = "0.28.0"
