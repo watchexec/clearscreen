@@ -1,6 +1,3 @@
-# Changelog
-
-## Next (YYYY-MM-DD)
 
 ## v3.0.0 (2024-04-11)
 
