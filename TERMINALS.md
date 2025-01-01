@@ -1260,9 +1260,9 @@ Native `TERM` is `xterm-256color`.
 
 ### Wezterm
 
-- Version 20210405.110924.a5bb5be8
+- Version 20240203
 
-Native `TERM` is `xterm-256color`.
+Native `TERM` is `wezterm`.
 
 - Default: `Terminfo`.
 - `Terminfo`: normal.
