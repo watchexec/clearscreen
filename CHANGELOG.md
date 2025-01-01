@@ -1,5 +1,5 @@
 
-## [v4.0.0] (2025-01-01)
+## v4.0.0 (2025-01-01)
 
 - **Deps:** Update which to 7.0.0 (#25) - ([207b3a4](https://github.com/watchexec/clearscreen/commit/207b3a4fdf7109faefc699250fb710dcfda18b83))
 - **Deps:** Add lockfile to git - ([64180fe](https://github.com/watchexec/clearscreen/commit/64180fe2d7db612633a77337159b020fbac93e68))
