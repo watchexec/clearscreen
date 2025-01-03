@@ -35,7 +35,7 @@ fn main() -> Result<(), Error> {
 
 		Ok(())
 	} else {
-		println!("Usage: cargo run --example cli -- <variant>\nWhere <variant> is one of the ClearScreen enum variants, same casing, or 'auto'.\nI recommend piping into `hexdump -C` to see what’s happening.");
+		println!("Usage: cargo run --example clscli -- <variant>\nWhere <variant> is one of the ClearScreen enum variants, same casing, or 'auto'.\nI recommend piping into `hexdump -C` to see what’s happening.");
 		Ok(())
 	}
 }
