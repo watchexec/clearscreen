@@ -840,7 +840,7 @@ mod unix {
 mod win {
 	use super::Error;
 
-	use std::{io, ptr};
+	use std::{io, mem::size_of, ptr};
 
 	use windows_sys::Win32::Foundation::{FALSE, HANDLE, INVALID_HANDLE_VALUE};
 	use windows_sys::Win32::NetworkManagement::NetManagement::{
