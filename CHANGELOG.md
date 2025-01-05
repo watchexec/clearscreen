@@ -1,4 +1,10 @@
 
+## v4.0.1 (2025-01-05)
+
+- **Deps:** Update MSRV to 1.79 - ([6984714](https://github.com/watchexec/clearscreen/commit/69847147d4deea47808e317d8b5f34b16a616ef2))
+- **Deps:** Switch from winapi to windows-sys (#26) - ([a13ea5a](https://github.com/watchexec/clearscreen/commit/a13ea5a6da2163a7f1efa8625f74cf84505c0845))
+- **Repo:** Fix changelog format - ([d72ec08](https://github.com/watchexec/clearscreen/commit/d72ec08ad20fd3b32434ed285f062cd5d3e795c0))
+
 ## v4.0.0 (2025-01-01)
 
 - **Deps:** Update which to 7.0.0 (#25) - ([207b3a4](https://github.com/watchexec/clearscreen/commit/207b3a4fdf7109faefc699250fb710dcfda18b83))
