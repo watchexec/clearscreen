@@ -840,38 +840,29 @@ mod unix {
 mod win {
 	use super::Error;
 
-	use std::{convert::TryFrom, io, mem::size_of, ptr};
+	use std::{io, mem::size_of, ptr};
 
-	use winapi::{
-		shared::minwindef::{DWORD, FALSE},
-		um::{
-			consoleapi::{GetConsoleMode, SetConsoleMode},
-			handleapi::INVALID_HANDLE_VALUE,
-			lmapibuf::{NetApiBufferAllocate, NetApiBufferFree},
-			lmserver::{NetServerGetInfo, MAJOR_VERSION_MASK, SERVER_INFO_101, SV_PLATFORM_ID_NT},
-			lmwksta::{NetWkstaGetInfo, WKSTA_INFO_100},
-			processenv::GetStdHandle,
-			winbase::{VerifyVersionInfoW, STD_OUTPUT_HANDLE},
-			wincon::{
-				ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT, ENABLE_PROCESSED_INPUT,
-				ENABLE_VIRTUAL_TERMINAL_PROCESSING,
-			},
-			winnt::{
-				VerSetConditionMask, HANDLE, OSVERSIONINFOEXW, POSVERSIONINFOEXW, ULONGLONG,
-				VER_GREATER_EQUAL, VER_MAJORVERSION, VER_MINORVERSION, VER_SERVICEPACKMAJOR,
-			},
-		},
+	use windows_sys::Win32::Foundation::{FALSE, HANDLE, INVALID_HANDLE_VALUE};
+	use windows_sys::Win32::NetworkManagement::NetManagement::{
+		NetApiBufferAllocate, NetApiBufferFree, NetServerGetInfo, NetWkstaGetInfo,
+		MAJOR_VERSION_MASK, SERVER_INFO_101, SV_PLATFORM_ID_NT, WKSTA_INFO_100,
 	};
+	use windows_sys::Win32::System::Console::{
+		GetConsoleMode, GetStdHandle, SetConsoleMode, CONSOLE_MODE, ENABLE_ECHO_INPUT,
+		ENABLE_LINE_INPUT, ENABLE_PROCESSED_INPUT, ENABLE_VIRTUAL_TERMINAL_PROCESSING,
+		STD_OUTPUT_HANDLE,
+	};
+	use windows_sys::Win32::System::SystemInformation::{
+		VerSetConditionMask, VerifyVersionInfoW, OSVERSIONINFOEXW, VER_MAJORVERSION,
+		VER_MINORVERSION, VER_SERVICEPACKMAJOR,
+	};
+	use windows_sys::Win32::System::SystemServices::VER_GREATER_EQUAL;
 
 	#[cfg(feature = "windows-console")]
-	use winapi::um::{
-		wincon::{
-			FillConsoleOutputAttribute, FillConsoleOutputCharacterW, GetConsoleScreenBufferInfo,
-			ScrollConsoleScreenBufferW, SetConsoleCursorPosition, CONSOLE_SCREEN_BUFFER_INFO,
-			PCONSOLE_SCREEN_BUFFER_INFO,
-		},
-		wincontypes::{CHAR_INFO_Char, CHAR_INFO, COORD, SMALL_RECT},
-		winnt::SHORT,
+	use windows_sys::Win32::System::Console::{
+		FillConsoleOutputAttribute, FillConsoleOutputCharacterW, GetConsoleScreenBufferInfo,
+		ScrollConsoleScreenBufferW, SetConsoleCursorPosition, CHAR_INFO, CHAR_INFO_0,
+		CONSOLE_SCREEN_BUFFER_INFO, COORD, SMALL_RECT,
 	};
 
 	fn console_handle() -> Result<HANDLE, Error> {
@@ -883,7 +874,7 @@ mod win {
 
 	#[cfg(feature = "windows-console")]
 	fn buffer_info(console: HANDLE) -> Result<CONSOLE_SCREEN_BUFFER_INFO, Error> {
-		let csbi: PCONSOLE_SCREEN_BUFFER_INFO = ptr::null_mut();
+		let csbi: *mut CONSOLE_SCREEN_BUFFER_INFO = ptr::null_mut();
 		if unsafe { GetConsoleScreenBufferInfo(console, csbi) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
@@ -928,12 +919,13 @@ mod win {
 		// Scroll it upwards off the top of the buffer with a magnitude of the entire height.
 		let target = COORD {
 			X: 0,
-			Y: (0 - csbi.dwSize.Y) as SHORT,
+			Y: (0 - csbi.dwSize.Y) as i16,
 		};
 
 		// Fill with empty spaces with the buffer’s default text attribute.
-		let mut space = CHAR_INFO_Char::default();
-		unsafe { *space.AsciiChar_mut() = b' ' as i8 };
+		let space = CHAR_INFO_0 {
+			AsciiChar: b' ' as i8,
+		};
 
 		let fill = CHAR_INFO {
 			Char: space,
@@ -1006,7 +998,7 @@ mod win {
 		Ok(())
 	}
 
-	const ENABLE_COOKED_MODE: DWORD =
+	const ENABLE_COOKED_MODE: CONSOLE_MODE =
 		ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT;
 
 	pub(crate) fn cooked() -> Result<(), Error> {
@@ -1031,15 +1023,15 @@ mod win {
 	// proper way, requires manifesting
 	#[inline]
 	fn um_verify_version() -> bool {
-		let condition_mask: ULONGLONG = unsafe {
+		let condition_mask: u64 = unsafe {
 			VerSetConditionMask(
 				VerSetConditionMask(
-					VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+					VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL as u8),
 					VER_MINORVERSION,
-					VER_GREATER_EQUAL,
+					VER_GREATER_EQUAL as u8,
 				),
 				VER_SERVICEPACKMAJOR,
-				VER_GREATER_EQUAL,
+				VER_GREATER_EQUAL as u8,
 			)
 		};
 
@@ -1047,12 +1039,19 @@ mod win {
 			dwMinorVersion: ABRACADABRA_THRESHOLD.1 as _,
 			dwMajorVersion: ABRACADABRA_THRESHOLD.0 as _,
 			wServicePackMajor: 0,
-			..OSVERSIONINFOEXW::default()
+			dwOSVersionInfoSize: size_of::<OSVERSIONINFOEXW>() as u32,
+			dwBuildNumber: 0,
+			dwPlatformId: 0,
+			szCSDVersion: [0; 128],
+			wServicePackMinor: 0,
+			wSuiteMask: 0,
+			wProductType: 0,
+			wReserved: 0,
 		};
 
 		let ret = unsafe {
 			VerifyVersionInfoW(
-				&mut osvi as POSVERSIONINFOEXW,
+				&mut osvi,
 				VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR,
 				condition_mask,
 			)
@@ -1249,14 +1248,14 @@ impl<'a, T: AsRef<&'a [u8]>> From<T> for ResetScrollback<'a> {
 	}
 }
 
-impl<'a> AsRef<[u8]> for ResetScrollback<'a> {
+impl AsRef<[u8]> for ResetScrollback<'_> {
 	#[inline]
 	fn as_ref(&self) -> &[u8] {
 		&self.0
 	}
 }
 
-impl<'a> ResetScrollback<'a> {
+impl ResetScrollback<'_> {
 	#[inline]
 	fn expand(&self) -> Expansion<Self> {
 		#[allow(dead_code)]
