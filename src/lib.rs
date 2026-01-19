@@ -1257,7 +1257,7 @@ impl AsRef<[u8]> for ResetScrollback<'_> {
 
 impl ResetScrollback<'_> {
 	#[inline]
-	fn expand(&self) -> Expansion<Self> {
+	fn expand(&self) -> Expansion<'_, Self> {
 		#[allow(dead_code)]
 		struct ExpansionHere<'a, T: 'a + AsRef<[u8]>> {
 			string: &'a T,
