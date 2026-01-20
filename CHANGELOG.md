@@ -1,4 +1,8 @@
 
+## v4.0.3 (2026-01-20)
+
+- **Deps:** Upgrade `nix`, allow `windows-sys` >=0.59, <=0.61 (#35) - ([9666a9a](https://github.com/watchexec/clearscreen/commit/9666a9a211170947f829e0ea3cfb447884be08d9))
+
 ## v4.0.2 (2025-06-25)
 
 - **Deps:** Upgrade which from 7.0.2 to 8.0.0 (#34) - ([09bc029](https://github.com/watchexec/clearscreen/commit/09bc0299f4c3dee10b3e155a88beafa0f2b82747))
