@@ -771,7 +771,7 @@ mod unix {
 		unistd::isatty,
 	};
 
-	use std::{fs::OpenOptions, io::stdin, os::fd::AsFd, os::unix::prelude::AsRawFd};
+	use std::{fs::OpenOptions, io::stdin, os::fd::AsFd};
 
 	pub(crate) fn vt_cooked() -> Result<(), Error> {
 		write_termios(|t| {
@@ -817,7 +817,7 @@ mod unix {
 	}
 
 	fn write_termios(f: impl Fn(&mut Termios)) -> Result<(), Error> {
-		if isatty(stdin().as_raw_fd()).map_err(NixError)? {
+		if isatty(stdin()).map_err(NixError)? {
 			let mut t = tcgetattr(stdin().as_fd()).map_err(NixError)?;
 			reset_termios(&mut t);
 			f(&mut t);
