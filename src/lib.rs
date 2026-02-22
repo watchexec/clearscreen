@@ -850,7 +850,7 @@ mod win {
 	use windows_sys::Win32::System::Console::{
 		GetConsoleMode, GetStdHandle, SetConsoleMode, CONSOLE_MODE, ENABLE_ECHO_INPUT,
 		ENABLE_LINE_INPUT, ENABLE_PROCESSED_INPUT, ENABLE_VIRTUAL_TERMINAL_PROCESSING,
-		STD_OUTPUT_HANDLE,
+		STD_INPUT_HANDLE, STD_OUTPUT_HANDLE,
 	};
 	use windows_sys::Win32::System::SystemInformation::{
 		VerSetConditionMask, VerifyVersionInfoW, OSVERSIONINFOEXW, VER_MAJORVERSION,
@@ -867,6 +867,13 @@ mod win {
 
 	fn console_handle() -> Result<HANDLE, Error> {
 		match unsafe { GetStdHandle(STD_OUTPUT_HANDLE) } {
+			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
+			handle => Ok(handle),
+		}
+	}
+
+	fn console_input_handle() -> Result<HANDLE, Error> {
+		match unsafe { GetStdHandle(STD_INPUT_HANDLE) } {
 			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
 			handle => Ok(handle),
 		}
@@ -1002,15 +1009,15 @@ mod win {
 		ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT;
 
 	pub(crate) fn cooked() -> Result<(), Error> {
-		let stdout = console_handle()?;
+		let stdin = console_input_handle()?;
 
 		let mut mode = 0;
-		if unsafe { GetConsoleMode(stdout, &mut mode) } == FALSE {
+		if unsafe { GetConsoleMode(stdin, &mut mode) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
 
 		mode |= ENABLE_COOKED_MODE;
-		if unsafe { SetConsoleMode(stdout, mode) } == FALSE {
+		if unsafe { SetConsoleMode(stdin, mode) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
 
