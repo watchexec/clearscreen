@@ -29,8 +29,8 @@ use std::{
 };
 
 use terminfo::{
-	capability::{self, Expansion},
-	expand::{Context, Parameter},
+	capability::{self},
+	expand::{Context, Expand, Parameter},
 	Capability, Database, Value,
 };
 use thiserror::Error;
@@ -453,7 +453,7 @@ impl ClearScreen {
 				}
 
 				if let Some(seq) = info.get::<ResetScrollback>() {
-					seq.expand().with(&mut ctx).to(&mut w)?;
+					seq.expand_to(&mut w, Some(&mut ctx))?;
 					w.flush()?;
 				}
 			}
@@ -469,7 +469,7 @@ impl ClearScreen {
 			Self::TerminfoScrollback => {
 				let info = Database::from_env()?;
 				if let Some(seq) = info.get::<ResetScrollback>() {
-					seq.expand().to(&mut w)?;
+					seq.expand_to(&mut w, None)?;
 					w.flush()?;
 				} else {
 					return Err(Error::TerminfoCap("E3"));
@@ -1291,23 +1291,15 @@ impl AsRef<[u8]> for ResetScrollback<'_> {
 
 impl ResetScrollback<'_> {
 	#[inline]
-	fn expand(&self) -> Expansion<'_, Self> {
-		#[allow(dead_code)]
-		struct ExpansionHere<'a, T: 'a + AsRef<[u8]>> {
-			string: &'a T,
-			params: [Parameter; 9],
-			context: Option<&'a mut Context>,
-		}
-
-		let here = ExpansionHere {
-			string: self,
-			params: Default::default(),
-			context: None,
-		};
-
-		// SAFETY: ExpansionHere is a local replica of the Expansion struct layout,
-		// with identical fields and lifetimes. This transmute is the only way to
-		// construct an Expansion (its fields are private) to add the E3 capability.
-		unsafe { std::mem::transmute(here) }
+	fn expand_to(
+		&self,
+		output: &mut impl Write,
+		context: Option<&mut Context>,
+	) -> Result<(), terminfo::Error> {
+		self.as_ref().expand(
+			output,
+			&<[Parameter; 9]>::default(),
+			context.unwrap_or(&mut Default::default()),
+		)
 	}
 }
