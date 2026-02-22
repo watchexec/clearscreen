@@ -1,4 +1,8 @@
 
+## v4.0.5 (2026-02-22)
+
+- **Deps:** Upgrade nix and transitives - ([310d148](https://github.com/watchexec/clearscreen/commit/310d148b27e4a5d6a8027e278562d1b85150b3ef))
+
 ## v4.0.4 (2026-02-22)
 
 - **Bugfix:** On Windows, we were applying an input flag on the output handle - ([b74c182](https://github.com/watchexec/clearscreen/commit/b74c182b302d9ac5569b45b050714fc7d1ddb550))

@@ -3,7 +3,7 @@ message: |
   If you use this software, please cite it using these metadata.
 title: "ClearScreen: a library to clear terminal screens and a research dataset on screen clearing behaviour in terminal emulators"
 
-version: "4.0.4"
+version: "4.0.5"
 date-released: 2026-02-22
 
 repository-code: https://github.com/watchexec/clearscreen
