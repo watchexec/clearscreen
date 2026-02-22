@@ -19,13 +19,14 @@ rust-version = "1.79.0"
 [features]
 windows-console = []
 
+# deps are safe to upgrade with no major bumps as they're deliberately not exposed in our API
 [dependencies]
 terminfo = "0.9.0"
 thiserror = "2.0.11"
 which = "8.0.0"
 
 [target.'cfg(unix)'.dependencies.nix]
-version = "0.30.1"
+version = "0.31.1"
 default-features = false
 features = ["fs", "term"]
 
