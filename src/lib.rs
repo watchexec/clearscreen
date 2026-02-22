@@ -866,6 +866,8 @@ mod win {
 	};
 
 	fn console_handle() -> Result<HANDLE, Error> {
+		// SAFETY: FFI call with a valid constant handle ID. Failure is indicated by
+		// INVALID_HANDLE_VALUE which is checked immediately.
 		match unsafe { GetStdHandle(STD_OUTPUT_HANDLE) } {
 			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
 			handle => Ok(handle),
@@ -873,6 +875,8 @@ mod win {
 	}
 
 	fn console_input_handle() -> Result<HANDLE, Error> {
+		// SAFETY: FFI call with a valid constant handle ID. Failure is indicated by
+		// INVALID_HANDLE_VALUE which is checked immediately.
 		match unsafe { GetStdHandle(STD_INPUT_HANDLE) } {
 			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
 			handle => Ok(handle),
@@ -881,27 +885,28 @@ mod win {
 
 	#[cfg(feature = "windows-console")]
 	fn buffer_info(console: HANDLE) -> Result<CONSOLE_SCREEN_BUFFER_INFO, Error> {
-		let csbi: *mut CONSOLE_SCREEN_BUFFER_INFO = ptr::null_mut();
-		if unsafe { GetConsoleScreenBufferInfo(console, csbi) } == FALSE {
+		// SAFETY: `console` is a valid handle obtained from GetStdHandle. `csbi` is
+		// a stack-allocated zeroed struct and we pass a valid mutable pointer to it.
+		// The return value is checked for failure.
+		let mut csbi: CONSOLE_SCREEN_BUFFER_INFO = unsafe { std::mem::zeroed() };
+		if unsafe { GetConsoleScreenBufferInfo(console, &mut csbi) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
 
-		if csbi.is_null() {
-			Err(Error::NullPtr("GetConsoleScreenBufferInfo"))
-		} else {
-			Ok(unsafe { ptr::read(csbi) })
-		}
+		Ok(csbi)
 	}
 
 	pub(crate) fn vt() -> Result<(), Error> {
 		let stdout = console_handle()?;
 
 		let mut mode = 0;
+		// SAFETY: `stdout` is a valid console handle, `mode` is a valid mutable reference.
 		if unsafe { GetConsoleMode(stdout, &mut mode) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
 
 		mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+		// SAFETY: `stdout` is a valid console handle, `mode` is a valid mode value.
 		if unsafe { SetConsoleMode(stdout, mode) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
@@ -940,6 +945,8 @@ mod win {
 		};
 
 		// Do the scroll.
+		// SAFETY: `console` is a valid handle, all struct arguments are properly initialised,
+		// and the null pointer is the expected way to indicate "no clipping rectangle".
 		if unsafe { ScrollConsoleScreenBufferW(console, &rect, ptr::null(), target, &fill) }
 			== FALSE
 		{
@@ -951,6 +958,7 @@ mod win {
 		cursor.X = 0;
 		cursor.Y = 0;
 
+		// SAFETY: `console` is a valid handle, `cursor` is a valid COORD.
 		if unsafe { SetConsoleCursorPosition(console, cursor) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
@@ -969,6 +977,7 @@ mod win {
 		let buffer_size = csbi.dwSize.X * csbi.dwSize.Y;
 		let home_coord = COORD { X: 0, Y: 0 };
 
+		// SAFETY: `console` is a valid handle, arguments are properly initialised values.
 		if FALSE
 			== unsafe {
 				FillConsoleOutputCharacterW(
@@ -984,6 +993,7 @@ mod win {
 
 		// Set the buffer's attributes accordingly.
 		let csbi = buffer_info(console)?;
+		// SAFETY: `console` is a valid handle, arguments are properly initialised values.
 		if FALSE
 			== unsafe {
 				FillConsoleOutputAttribute(
@@ -998,6 +1008,7 @@ mod win {
 		}
 
 		// Put the cursor at its home coordinates.
+		// SAFETY: `console` is a valid handle, `home_coord` is a valid COORD.
 		if unsafe { SetConsoleCursorPosition(console, home_coord) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
@@ -1012,11 +1023,13 @@ mod win {
 		let stdin = console_input_handle()?;
 
 		let mut mode = 0;
+		// SAFETY: `stdin` is a valid console handle, `mode` is a valid mutable reference.
 		if unsafe { GetConsoleMode(stdin, &mut mode) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
 
 		mode |= ENABLE_COOKED_MODE;
+		// SAFETY: `stdin` is a valid console handle, `mode` is a valid mode value.
 		if unsafe { SetConsoleMode(stdin, mode) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
@@ -1030,6 +1043,7 @@ mod win {
 	// proper way, requires manifesting
 	#[inline]
 	fn um_verify_version() -> bool {
+		// SAFETY: VerSetConditionMask is a pure function with no pointer arguments.
 		let condition_mask: u64 = unsafe {
 			VerSetConditionMask(
 				VerSetConditionMask(
@@ -1056,6 +1070,8 @@ mod win {
 			wReserved: 0,
 		};
 
+		// SAFETY: `osvi` is a properly initialised OSVERSIONINFOEXW with correct
+		// dwOSVersionInfoSize. The condition mask and type mask are valid constants.
 		let ret = unsafe {
 			VerifyVersionInfoW(
 				&mut osvi,
@@ -1070,6 +1086,10 @@ mod win {
 	// querying the local netserver management api?
 	#[inline]
 	fn um_netserver() -> Result<bool, Error> {
+		// SAFETY: NetApiBufferAllocate/Free and NetServerGetInfo are Windows API
+		// calls. `buf` is allocated via NetApiBufferAllocate before use, read via
+		// ptr::read after a successful NetServerGetInfo, and always freed with
+		// NetApiBufferFree. All return codes are checked.
 		unsafe {
 			let mut buf = ptr::null_mut();
 			match NetApiBufferAllocate(
@@ -1105,6 +1125,10 @@ mod win {
 	// querying the local workstation management api?
 	#[inline]
 	fn um_workstation() -> Result<bool, Error> {
+		// SAFETY: NetApiBufferAllocate/Free and NetWkstaGetInfo are Windows API
+		// calls. `buf` is allocated via NetApiBufferAllocate before use, read via
+		// ptr::read after a successful NetWkstaGetInfo, and always freed with
+		// NetApiBufferFree. All return codes are checked.
 		unsafe {
 			let mut buf = ptr::null_mut();
 			match NetApiBufferAllocate(
@@ -1141,6 +1165,7 @@ mod win {
 		let stdout = console_handle()?;
 
 		let mut mode = 0;
+		// SAFETY: `stdout` is a valid console handle, `mode` is a valid mutable reference.
 		if unsafe { GetConsoleMode(stdout, &mut mode) } == FALSE {
 			return Err(io::Error::last_os_error().into());
 		}
@@ -1149,11 +1174,13 @@ mod win {
 
 		let mut newmode = mode;
 		newmode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+		// SAFETY: `stdout` is a valid console handle, `newmode` is a valid mode value.
 		if unsafe { SetConsoleMode(stdout, newmode) } != FALSE {
 			support = true;
 		}
 
 		// reset it to original value, whatever we do
+		// SAFETY: `stdout` is a valid console handle, restoring the original `mode` value.
 		unsafe { SetConsoleMode(stdout, mode) };
 
 		Ok(support)
@@ -1278,8 +1305,9 @@ impl ResetScrollback<'_> {
 			context: None,
 		};
 
-		// UNSAFE >:( this is iffy af but also the only way to create an Expansion
-		// such that we can add the E3 capability.
+		// SAFETY: ExpansionHere is a local replica of the Expansion struct layout,
+		// with identical fields and lifetimes. This transmute is the only way to
+		// construct an Expansion (its fields are private) to add the E3 capability.
 		unsafe { std::mem::transmute(here) }
 	}
 }
