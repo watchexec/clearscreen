@@ -1,4 +1,10 @@
 
+## v4.0.4 (2026-02-22)
+
+- **Bugfix:** On Windows, we were applying an input flag on the output handle - ([b74c182](https://github.com/watchexec/clearscreen/commit/b74c182b302d9ac5569b45b050714fc7d1ddb550))
+- **Bugfix:** Justify all unsafe, and fix a safety buy - ([aa0e2d7](https://github.com/watchexec/clearscreen/commit/aa0e2d7bac2c04ee8081970a9b61a978ec294d6c))
+- **Tweak:** Eliminate an iffy unsafe call - ([1341f38](https://github.com/watchexec/clearscreen/commit/1341f3827492df47cd6268d8af633e8863bfb68a))
+
 ## v4.0.3 (2026-01-20)
 
 - **Deps:** Upgrade `nix`, allow `windows-sys` >=0.59, <=0.61 (#35) - ([9666a9a](https://github.com/watchexec/clearscreen/commit/9666a9a211170947f829e0ea3cfb447884be08d9))
