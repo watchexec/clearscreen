@@ -26,7 +26,7 @@ thiserror = "2.0.11"
 which = "8.0.0"
 
 [target.'cfg(unix)'.dependencies.nix]
-version = "0.31.1"
+version = "0.31.2"
 default-features = false
 features = ["fs", "term"]
 
