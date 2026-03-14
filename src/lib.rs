@@ -792,13 +792,17 @@ mod unix {
 			let mut inserts = InputFlags::BRKINT
 				| InputFlags::ICRNL
 				| InputFlags::IGNPAR
-				| InputFlags::IMAXBEL
 				| InputFlags::ISTRIP
 				| InputFlags::IXON;
 
 			#[cfg(any(target_os = "android", target_os = "linux", target_os = "macos"))]
 			{
 				inserts |= InputFlags::IUTF8;
+			}
+
+			#[cfg(not(target_os = "redox"))]
+			{
+				inserts |= InputFlags::IMAXBEL;
 			}
 
 			t.input_flags.insert(inserts);
