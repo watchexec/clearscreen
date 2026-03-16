@@ -1,4 +1,8 @@
 
+## v4.0.6 (2026-03-16)
+
+- **Bugfix:** Support Redox OS (#40) - ([48bb58a](https://github.com/watchexec/clearscreen/commit/48bb58ab60277c63726ce563b15a2104db5781ea))
+
 ## v4.0.5 (2026-02-22)
 
 - **Deps:** Upgrade nix and transitives - ([310d148](https://github.com/watchexec/clearscreen/commit/310d148b27e4a5d6a8027e278562d1b85150b3ef))

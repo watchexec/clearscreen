@@ -22,7 +22,7 @@ See my research notes in the [TERMINALS.md](./TERMINALS.md) file.
 
 ```toml
 [dependencies]
-clearscreen = "4.0.5"
+clearscreen = "4.0.6"
 ```
 
 ```rust
