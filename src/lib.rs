@@ -257,11 +257,17 @@ pub enum ClearScreen {
 	/// - Input BRKINT set: on BREAK, flush i/o queues and send a SIGINT to any running process.
 	/// - Input ICRNL set: translate Carriage Returns to New Lines on input.
 	/// - Input IGNPAR set: ignore framing and parity errors.
-	/// - Input ISTRIP set: strip off eigth bit.
 	/// - Input IXON set: enable XON/XOFF flow control on output.
 	/// - Output OPOST set: enable output processing.
+	/// - Control CSIZE and the baud rate: left as they were found (see below).
 	/// - Local ICANON set: enable canonical mode (see below).
 	/// - Local ISIG set: when Ctrl-C, Ctrl-Q, etc are received, send the appropriate signal.
+	/// - Local IEXTEN set: enable implementation-defined input processing.
+	/// - Local ECHO set: echo input characters back to the terminal.
+	/// - Local ECHOE set: ERASE (backspace) visibly erases the previous character.
+	/// - Local ECHOK set: KILL visibly erases the current line.
+	/// - Local ECHOCTL set: render control characters as `^X` (not on Redox).
+	/// - Local ECHOKE set: KILL erases the line as if by a sequence of ERASEs (not on Redox).
 	///
 	/// Canonical mode is really the core of “cooked” mode and enables:
 	///
@@ -272,6 +278,12 @@ pub enum ClearScreen {
 	/// - a maximum line length of 4096 characters (bytes).
 	///
 	/// When canonical mode is unset (when the bit is cleared), all input processing is disabled.
+	///
+	/// The character size and the line speed are the one part of the configuration that is
+	/// preserved rather than written: they describe the line itself, not how the terminal
+	/// behaves on it, and clearing the screen has no way to know what to put back. On Linux
+	/// the baud rate is stored in the control flags, so it is carried across along with
+	/// CSIZE; on other platforms it has its own fields, which are never written here.
 	///
 	/// Due to how the underlying [`tcsetattr`] function is defined in POSIX, this may complete
 	/// without error if _any part_ of the configuration is applied, not just when all of it is set.
@@ -302,13 +314,19 @@ pub enum ClearScreen {
 	/// - Input IUTF8 set: input is UTF-8 (Linux only, since 2.6.4).
 	/// - Input IGNPAR set: ignore framing and parity errors.
 	/// - Input IMAXBEL set: ring terminal bell when input queue is full (not implemented in Linux).
-	/// - Input ISTRIP set: strip off eigth bit.
 	/// - Input IXON set: enable XON/XOFF flow control on output.
 	/// - Output ONLCR set: do not translate Carriage Return to CR NL.
 	/// - Output OPOST set: enable output processing.
 	/// - Control CREAD set: enable receiver.
+	/// - Control CSIZE and the baud rate: left as they were found.
 	/// - Local ICANON set: enable canonical mode (see [`VtCooked`][ClearScreen::VtCooked]).
 	/// - Local ISIG set: when Ctrl-C, Ctrl-Q, etc are received, send the appropriate signal.
+	/// - Local IEXTEN set: enable implementation-defined input processing.
+	/// - Local ECHO, ECHOE and ECHOK set, plus ECHOCTL and ECHOKE where they exist: echo
+	///   input back to the terminal (see [`VtCooked`][ClearScreen::VtCooked]).
+	///
+	/// ISTRIP is deliberately *not* set. It clears the eighth bit of every input byte, which
+	/// no multi-byte UTF-8 sequence survives, and it contradicts IUTF8 above.
 	///
 	/// Does nothing on non-Unix targets.
 	VtWellDone,
@@ -771,72 +789,233 @@ mod unix {
 		unistd::isatty,
 	};
 
-	use std::{fs::OpenOptions, io::stdin, os::fd::AsFd};
+	use std::{
+		fs::OpenOptions,
+		io::stdin,
+		os::fd::{AsFd, BorrowedFd},
+	};
 
 	pub(crate) fn vt_cooked() -> Result<(), Error> {
-		write_termios(|t| {
-			t.input_flags.insert(
-				InputFlags::BRKINT
-					| InputFlags::ICRNL
-					| InputFlags::IGNPAR
-					| InputFlags::ISTRIP
-					| InputFlags::IXON,
-			);
-			t.output_flags.insert(OutputFlags::OPOST);
-			t.local_flags.insert(LocalFlags::ICANON | LocalFlags::ISIG);
-		})
+		write_termios(cooked_mode)
 	}
 
 	pub(crate) fn vt_well_done() -> Result<(), Error> {
-		write_termios(|t| {
-			let mut inserts = InputFlags::BRKINT
-				| InputFlags::ICRNL
-				| InputFlags::IGNPAR
-				| InputFlags::ISTRIP
-				| InputFlags::IXON;
+		write_termios(well_done_mode)
+	}
 
-			#[cfg(any(target_os = "android", target_os = "linux", target_os = "macos"))]
-			{
-				inserts |= InputFlags::IUTF8;
-			}
+	fn cooked_mode(t: &mut Termios) {
+		t.input_flags
+			.insert(InputFlags::BRKINT | InputFlags::ICRNL | InputFlags::IGNPAR | InputFlags::IXON);
+		t.output_flags.insert(OutputFlags::OPOST);
+		t.local_flags.insert(usable_local_flags());
+	}
 
-			#[cfg(not(target_os = "redox"))]
-			{
-				inserts |= InputFlags::IMAXBEL;
-			}
+	fn well_done_mode(t: &mut Termios) {
+		#[allow(unused_mut)]
+		let mut inserts = InputFlags::BRKINT | InputFlags::ICRNL | InputFlags::IGNPAR | InputFlags::IXON;
 
-			t.input_flags.insert(inserts);
-			t.output_flags
-				.insert(OutputFlags::ONLCR | OutputFlags::OPOST);
-			t.control_flags.insert(ControlFlags::CREAD);
-			t.local_flags.insert(LocalFlags::ICANON | LocalFlags::ISIG);
-		})
+		#[cfg(any(target_os = "android", target_os = "linux", target_os = "macos"))]
+		{
+			inserts |= InputFlags::IUTF8;
+		}
+
+		#[cfg(not(target_os = "redox"))]
+		{
+			inserts |= InputFlags::IMAXBEL;
+		}
+
+		t.input_flags.insert(inserts);
+		t.output_flags
+			.insert(OutputFlags::ONLCR | OutputFlags::OPOST);
+		t.control_flags.insert(ControlFlags::CREAD);
+		t.local_flags.insert(usable_local_flags());
+	}
+
+	/// The local flags a terminal needs for a person to be able to use it.
+	///
+	/// Canonical mode and signal generation are what make the line editable and
+	/// interruptible; echo is what makes it visible. A mode that sets the first two and
+	/// not the third leaves a terminal that accepts input without showing it, which is
+	/// the state people reach for `reset` to escape.
+	///
+	/// The echo flags are separate bits, and all of them matter: ECHOE and ECHOK are what
+	/// make ERASE and KILL visibly edit the line rather than silently alter a line that
+	/// stays on screen as typed, and ECHOCTL and ECHOKE are what render control
+	/// characters as `^C` instead of letting them through to the terminal as escape
+	/// sequences.
+	fn usable_local_flags() -> LocalFlags {
+		let mut flags = LocalFlags::ICANON
+			| LocalFlags::ISIG
+			| LocalFlags::IEXTEN
+			| LocalFlags::ECHO
+			| LocalFlags::ECHOE
+			| LocalFlags::ECHOK;
+
+		#[cfg(not(target_os = "redox"))]
+		{
+			flags |= LocalFlags::ECHOCTL | LocalFlags::ECHOKE;
+		}
+
+		flags
+	}
+
+	/// Control bits that describe the line itself rather than how the terminal behaves
+	/// on it: how wide a character is, and how fast characters move.
+	///
+	/// Clearing the screen has no business changing these, and no way to know what to
+	/// put back afterwards. Wiping them leaves CSIZE at CS5 and, on Linux where the
+	/// speed lives in the control flags, the baud rate at B0 — which on a real serial
+	/// line means "hang up". Elsewhere the speed has its own fields, which are not
+	/// touched here.
+	fn line_configuration() -> ControlFlags {
+		#[allow(unused_mut)]
+		let mut keep = ControlFlags::CSIZE;
+
+		#[cfg(any(target_os = "android", target_os = "linux"))]
+		{
+			keep |= ControlFlags::CBAUD;
+		}
+
+		keep
 	}
 
 	fn reset_termios(t: &mut Termios) {
 		t.input_flags.remove(InputFlags::all());
 		t.output_flags.remove(OutputFlags::all());
-		t.control_flags.remove(ControlFlags::all());
+		t.control_flags
+			.remove(ControlFlags::all().difference(line_configuration()));
 		t.local_flags.remove(LocalFlags::all());
 	}
 
 	fn write_termios(f: impl Fn(&mut Termios)) -> Result<(), Error> {
 		if isatty(stdin()).map_err(NixError)? {
-			let mut t = tcgetattr(stdin().as_fd()).map_err(NixError)?;
-			reset_termios(&mut t);
-			f(&mut t);
-			tcsetattr(stdin().as_fd(), TCSANOW, &t).map_err(NixError)?;
+			write_termios_to(stdin().as_fd(), f)
 		} else {
 			let tty = OpenOptions::new().read(true).write(true).open("/dev/tty")?;
-			let fd = tty.as_fd();
+			write_termios_to(tty.as_fd(), f)
+		}
+	}
 
-			let mut t = tcgetattr(fd).map_err(NixError)?;
-			reset_termios(&mut t);
-			f(&mut t);
-			tcsetattr(fd, TCSANOW, &t).map_err(NixError)?;
+	fn write_termios_to(fd: BorrowedFd<'_>, f: impl Fn(&mut Termios)) -> Result<(), Error> {
+		let mut t = tcgetattr(fd).map_err(NixError)?;
+		reset_termios(&mut t);
+		f(&mut t);
+		tcsetattr(fd, TCSANOW, &t).map_err(NixError)?;
+		Ok(())
+	}
+
+	// openpty is not available everywhere `mod unix` is.
+	#[cfg(all(
+		test,
+		not(any(target_os = "redox", target_os = "fuchsia", target_os = "aix"))
+	))]
+	mod tests {
+		use super::*;
+		use nix::pty::openpty;
+
+		/// A terminal as a person would find it, to apply the modes to.
+		fn sane_pty() -> nix::pty::OpenptyResult {
+			let pty = openpty(None, None).expect("openpty");
+			let mut t = tcgetattr(&pty.slave).expect("tcgetattr");
+			t.local_flags.insert(usable_local_flags());
+			t.input_flags.remove(InputFlags::ISTRIP);
+			t.control_flags.remove(ControlFlags::CSIZE);
+			t.control_flags.insert(ControlFlags::CS8);
+			tcsetattr(&pty.slave, TCSANOW, &t).expect("tcsetattr");
+			pty
 		}
 
-		Ok(())
+		/// Both modes, since they share the parts under test and neither may drop echo.
+		fn each_mode() -> [(&'static str, fn(&mut Termios)); 2] {
+			[
+				("vt_cooked", cooked_mode as fn(&mut Termios)),
+				("vt_well_done", well_done_mode),
+			]
+		}
+
+		#[test]
+		fn echo_survives() {
+			for (name, mode) in each_mode() {
+				let pty = sane_pty();
+				write_termios_to(pty.slave.as_fd(), mode).expect("write_termios_to");
+
+				let after = tcgetattr(&pty.slave).expect("tcgetattr");
+				for flag in [
+					LocalFlags::ECHO,
+					LocalFlags::ECHOE,
+					LocalFlags::ECHOK,
+					LocalFlags::ECHOCTL,
+					LocalFlags::ECHOKE,
+				] {
+					assert!(
+						after.local_flags.contains(flag),
+						"{name} left the terminal without {flag:?}"
+					);
+				}
+				assert!(
+					after.local_flags.contains(LocalFlags::IEXTEN),
+					"{name} left the terminal without IEXTEN"
+				);
+				assert!(after.local_flags.contains(LocalFlags::ICANON), "{name}");
+				assert!(after.local_flags.contains(LocalFlags::ISIG), "{name}");
+			}
+		}
+
+		#[test]
+		fn the_eighth_bit_is_not_stripped() {
+			for (name, mode) in each_mode() {
+				let pty = sane_pty();
+				write_termios_to(pty.slave.as_fd(), mode).expect("write_termios_to");
+
+				let after = tcgetattr(&pty.slave).expect("tcgetattr");
+				assert!(
+					!after.input_flags.contains(InputFlags::ISTRIP),
+					"{name} set ISTRIP, so UTF-8 input cannot survive"
+				);
+			}
+		}
+
+		/// The line's own configuration is not the screen's to rewrite. Wiping it left
+		/// CS5 at B0, and B0 hangs up a real serial line.
+		#[test]
+		fn the_line_configuration_is_left_alone() {
+			for (name, mode) in each_mode() {
+				let pty = sane_pty();
+				let before = tcgetattr(&pty.slave).expect("tcgetattr");
+				write_termios_to(pty.slave.as_fd(), mode).expect("write_termios_to");
+
+				let after = tcgetattr(&pty.slave).expect("tcgetattr");
+				assert_eq!(
+					after.control_flags & line_configuration(),
+					before.control_flags & line_configuration(),
+					"{name} changed the character size or line speed"
+				);
+				assert!(
+					after.control_flags.contains(ControlFlags::CS8),
+					"{name} left the terminal at fewer than 8 bits per character"
+				);
+			}
+		}
+
+		/// The modes are meant to be applied to a terminal that is already unusable, so
+		/// starting from one with echo already off must still produce a usable terminal.
+		#[test]
+		fn a_terminal_already_without_echo_is_recovered() {
+			for (name, mode) in each_mode() {
+				let pty = sane_pty();
+				let mut t = tcgetattr(&pty.slave).expect("tcgetattr");
+				t.local_flags.remove(LocalFlags::all());
+				tcsetattr(&pty.slave, TCSANOW, &t).expect("tcsetattr");
+
+				write_termios_to(pty.slave.as_fd(), mode).expect("write_termios_to");
+
+				let after = tcgetattr(&pty.slave).expect("tcgetattr");
+				assert!(
+					after.local_flags.contains(LocalFlags::ECHO),
+					"{name} did not restore echo"
+				);
+			}
+		}
 	}
 }
 
