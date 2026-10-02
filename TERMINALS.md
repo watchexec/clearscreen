@@ -4,13 +4,6 @@ Research on Terminals
 All tested with their latest version obtainable of Arch Linux (or macOS 11, Windows 10) as of
 writing. Version tested is noted where possible, but otherwise compare to the git blame date.
 
-Note (2026-10): the Windows entries below were tested against the old Windows implementation,
-which selected `WindowsVtClear` by detecting Windows ≥10. That variant and the version detection
-are gone: the console's VT support is now probed directly, `XtermClear` is selected when it is
-supported (enabling VT processing for the duration of the operation), and the legacy
-`WindowsConsoleClear` is the fallback. The entries need re-testing under that implementation; the
-`WindowsVtClear` rows correspond to today's `XtermClear` on a VT-capable console.
-
 To contribute entries:
 
 - Insert in the correct category, in lexicographic order
