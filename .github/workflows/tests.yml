@@ -32,7 +32,6 @@ jobs:
       - if: "matrix.platform != 'windows'"
         run: cargo test
 
-      # the enumeration of tests is because windows_vt tests don't work in CI somehow
       # the Invoke-NativeCommand thing is because powershell is fucking insane
       # ref: https://stackoverflow.com/questions/11450153/powershell-analogue-of-bashs-set-e
       - if: "matrix.platform == 'windows'"
@@ -47,12 +46,4 @@ jobs:
             }
           }
 
-          Invoke-NativeCommand cargo test --doc
-          Invoke-NativeCommand cargo test --test platformed terminfo
-          Invoke-NativeCommand cargo test --test platformed xterm
-          Invoke-NativeCommand cargo test --test platformed tput
-          Invoke-NativeCommand cargo test --test platformed windows_cls
-          Invoke-NativeCommand cargo test --test platformed vt_ris
-
-          cd tests/win10
-          Invoke-NativeCommand cargo run
+          Invoke-NativeCommand cargo test

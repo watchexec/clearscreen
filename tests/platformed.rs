@@ -61,16 +61,6 @@ fn windows_cls() {
 }
 
 #[test]
-fn windows_vt() {
-	ClearScreen::WindowsVt.clear().unwrap();
-}
-
-#[test]
-fn windows_vt_clear() {
-	ClearScreen::WindowsVtClear.clear().unwrap();
-}
-
-#[test]
 fn vt_ris() {
 	ClearScreen::VtRis.clear().unwrap();
 }

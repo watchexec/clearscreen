@@ -14,8 +14,10 @@
 //!
 //! For anything else, refer to the [`ClearScreen`] enum.
 //!
-//! If you are supporting Windows in any capacity, the [`is_windows_10()`] documentation is
-//! **required reading**.
+//! On Windows, the sequence-based methods enable VT processing on the console for the duration of
+//! the operation (restoring the previous console mode afterwards), with no version detection or
+//! manifest required; if the console host does not support VT escapes, they fall back to the
+//! legacy Windows Console clear.
 
 #![doc(html_favicon_url = "https://watchexec.github.io/logo:clearscreen.svg")]
 #![doc(html_logo_url = "https://watchexec.github.io/logo:clearscreen.svg")]
@@ -155,31 +157,12 @@ pub enum ClearScreen {
 	///
 	/// This is the Windows command to clear the screen. It has the same caveats as
 	/// [`TputClear`][ClearScreen::TputClear] does, but its internal mechanism is not known. Prefer
-	/// [`WindowsClear`][ClearScreen::WindowsClear] instead to avoid relying on an external command.
+	/// [`WindowsConsoleClear`][ClearScreen::WindowsConsoleClear] instead to avoid relying on an
+	/// external command.
 	///
 	/// This will always attempt to run the command, regardless of compile target, which may have
 	/// unintended effects if the `cls` executable does something different on the platform.
 	Cls,
-
-	/// Sets the Windows Console to support VT escapes.
-	///
-	/// This sets the `ENABLE_VIRTUAL_TERMINAL_PROCESSING` bit in the console mode, which enables
-	/// support for the terminal escape sequences every other terminal uses. This is supported since
-	/// Windows 10, from the Threshold 2 Update in November 2015.
-	///
-	/// Does nothing on non-Windows targets.
-	WindowsVt,
-
-	/// Sets the Windows Console to support VT escapes and prints the clear sequence.
-	///
-	/// This runs [`WindowsVt`][ClearScreen::WindowsVt] and [`XtermClear`][ClearScreen::XtermClear],
-	/// in this order. This is described here:
-	/// https://docs.microsoft.com/en-us/windows/console/clearing-the-screen#example-1 as the
-	/// recommended clearing method for all new development, although we also reset the cursor
-	/// position.
-	///
-	/// While `WindowsVt` will do nothing on non-Windows targets, `XtermClear` will still run.
-	WindowsVtClear,
 
 	/// Uses Windows Console function to scroll the screen buffer and fill it with white space.
 	///
@@ -192,7 +175,6 @@ pub enum ClearScreen {
 	/// as the equivalent to CMD.EXE's `cls` command.
 	///
 	/// Does nothing on non-Windows targets.
-	#[cfg(feature = "windows-console")]
 	WindowsConsoleClear,
 
 	/// Uses Windows Console function to blank the screen state.
@@ -339,8 +321,7 @@ impl Default for ClearScreen {
 	/// techniques appear. However, it will always strive to provide the best method. It will also
 	/// never have side-effects, and finding any such behaviour should be reported as a bug.
 	///
-	/// If you wish to make your own, the [`is_microsoft_terminal()`] and [`is_windows_10()`]
-	/// functions may be useful.
+	/// If you wish to make your own, the [`is_microsoft_terminal()`] function may be useful.
 	///
 	/// The [`ClearScreen`] variant selected is always in the “clear” behaviour side of things. If
 	/// you wish to only clear the screen and not the scrollback, or to perform a terminal reset, or
@@ -364,8 +345,6 @@ impl Default for ClearScreen {
 		if cfg!(windows) {
 			return if is_microsoft_terminal() {
 				Self::XtermClear
-			} else if is_windows_10() {
-				Self::WindowsVtClear
 			} else if term.is_some() && varfull("TERMINFO") {
 				Self::Terminfo
 			} else if term.is_some() && which("tput").is_ok() {
@@ -458,6 +437,16 @@ impl ClearScreen {
 	///
 	/// For normal use, prefer [`clear()`].
 	pub fn clear_to(self, mut w: &mut impl Write) -> Result<(), Error> {
+		// The guard keeps VT processing enabled until this function returns.
+		#[cfg(windows)]
+		let (no_vt, _vt_guard) = match win::vt() {
+			Ok(win::VtSupport::Enabled(guard)) => (false, Some(guard)),
+			Ok(win::VtSupport::NoVt) => (true, None),
+			// Not a console (redirected, captured, detached) or a hard stdio error:
+			// write the sequences out as usual, there is no console mode to manage.
+			_ => (false, None),
+		};
+
 		match self {
 			Self::Terminfo => {
 				let info = Database::from_env()?;
@@ -545,6 +534,12 @@ impl ClearScreen {
 				}
 			}
 			Self::XtermClear => {
+				// If the console host doesn't support VT escapes, clear the legacy way.
+				#[cfg(windows)]
+				if no_vt {
+					return win::clear();
+				}
+
 				const CURSOR_HOME: &[u8] = b"H";
 				const ERASE_SCREEN: &[u8] = b"2J";
 				const ERASE_SCROLLBACK: &[u8] = b"3J";
@@ -561,6 +556,12 @@ impl ClearScreen {
 				w.flush()?;
 			}
 			Self::XtermReset => {
+				// If the console host doesn't support VT escapes, clear the legacy way.
+				#[cfg(windows)]
+				if no_vt {
+					return win::clear();
+				}
+
 				const STR: &[u8] = b"!p";
 				const RESET_WIDTH_AND_SCROLL: &[u8] = b"?3;4l";
 				const RESET_REPLACE: &[u8] = b"4l";
@@ -605,13 +606,6 @@ impl ClearScreen {
 					return Err(Error::Command("cls", status));
 				}
 			}
-			Self::WindowsVt => win::vt()?,
-			Self::WindowsVtClear => {
-				let vtres = win::vt();
-				Self::XtermClear.clear_to(w)?;
-				vtres?;
-			}
-			#[cfg(feature = "windows-console")]
 			Self::WindowsConsoleClear => win::clear()?,
 			#[cfg(feature = "windows-console")]
 			Self::WindowsConsoleBlank => win::blank()?,
@@ -640,61 +634,20 @@ pub fn clear() -> Result<(), Error> {
 	ClearScreen::default().clear()
 }
 
-/// Detects Microsoft Terminal.
+/// Detects whether the console host supports VT escape processing.
 ///
-/// Note that this is only provided to write your own clearscreen logic and _should not_ be relied
-/// on for other purposes, as it makes no guarantees of reliable detection, and its internal
-/// behaviour may change without notice.
-pub fn is_microsoft_terminal() -> bool {
-	env::var("WT_SESSION").is_ok()
-}
-
-/// Detects Windows ≥10.
-///
-/// As mentioned in the [`WindowsVt`][ClearScreen::WindowsVt] documentation, Windows 10 from the
-/// Threshold 2 Update in November 2015 supports the `ENABLE_VIRTUAL_TERMINAL_PROCESSING` console
-/// mode bit, which enables VT100/ECMA-48 escape sequence processing in the console. This in turn
-/// makes clearing the console vastly easier and is the recommended mode of operation by Microsoft.
-///
-/// However, detecting Windows ≥10 is not trivial. To mitigate broken programs that incorrectly
-/// perform version shimming, Microsoft has deprecated most ways to obtain the version of Windows by
-/// making the relevant APIs _lie_ unless the calling executable [embeds a manifest that explicitely
-/// opts-in to support Windows 10][manifesting].
-///
-/// To be clear, **this is the proper way to go**, and while this function tries, it may return
-/// false under some Win10s if you don't manifest. If you are writing an application which uses this
-/// library, or indeed any application targeting Windows at all, you should embed such a manifest
-/// (and take that opportunity to opt-in to long path support, see e.g. [watchexec#163]). If you are
-/// writing a library on top of this one, it is your responsibility to communicate this requirement
-/// to your users.
-///
-/// It is important to remark that it is not possible to manifest twice. In plainer words,
-/// **libraries _must not_ embed a manifest** as that will make it impossible for applications which
-/// depend on them to embed their own manifest.
-///
-/// This function tries its best to detect Windows ≥10, and specifically, whether the mentioned mode
-/// bit can be used. Critically, it leaves trying to set the bit as feature detection as a last
-/// resort, such that _an error setting the bit_ is not confunded with _the bit not being supported_.
+/// This is a capability probe, not a version check: it briefly enables the VT processing console
+/// mode and restores the previous mode immediately, so it has no lasting side-effects. It returns
+/// true for Windows Terminal, for conhost on Windows ≥10, and for any other console host that
+/// supports VT processing (a few exist for Windows 8).
 ///
 /// Note that this is only provided to write your own clearscreen logic and _should not_ be relied
 /// on for other purposes, as it makes no guarantees of reliable detection, and its internal
 /// behaviour may change without notice. Additionally, this will always return false if the library
-/// was compiled for a non-Windows target, even if e.g. it’s running under WSL in a Windows 10 host.
-///
-/// TL;DR:
-///
-/// - Runs on Windows ≥10 without manifest and returns `true`: good, expected behaviour.
-/// - Runs on Windows ≥10 without manifest and returns `false`: **not a bug**, please manifest.
-/// - Runs on Windows ≥10 with manifest and returns `true`: good, expected behaviour.
-/// - Runs on Windows ≥10 with manifest and returns `false`: **is a bug**, please report it.
-/// - Runs on Windows <10 and returns `true`: **is a bug**, please report it. [ex #5]
-/// - Runs on Windows <10 and returns `false`: good, expected behaviour.
-///
-/// [ex #5]: https://github.com/watchexec/clearscreen/issues/5
-/// [manifesting]: https://docs.microsoft.com/en-us/windows/win32/sysinfo/targeting-your-application-at-windows-8-1
-/// [watchexec#163]: https://github.com/watchexec/watchexec/issues/163
-pub fn is_windows_10() -> bool {
-	win::is_windows_10()
+/// was compiled for a non-Windows target, and if the standard output is not a console (such as
+/// when it is redirected or captured).
+pub fn is_microsoft_terminal() -> bool {
+	win::vt_supported()
 }
 
 /// Error type.
@@ -1023,29 +976,20 @@ mod unix {
 mod win {
 	use super::Error;
 
-	use std::{io, mem::size_of, ptr};
+	use std::{io, ptr};
 
 	use windows_sys::Win32::Foundation::{FALSE, HANDLE, INVALID_HANDLE_VALUE};
-	use windows_sys::Win32::NetworkManagement::NetManagement::{
-		NetApiBufferFree, NetServerGetInfo, NetWkstaGetInfo, MAJOR_VERSION_MASK, SERVER_INFO_101,
-		SV_PLATFORM_ID_NT, WKSTA_INFO_100,
-	};
 	use windows_sys::Win32::System::Console::{
-		GetConsoleMode, GetStdHandle, SetConsoleMode, CONSOLE_MODE, ENABLE_ECHO_INPUT,
-		ENABLE_LINE_INPUT, ENABLE_PROCESSED_INPUT, ENABLE_VIRTUAL_TERMINAL_PROCESSING,
-		STD_INPUT_HANDLE, STD_OUTPUT_HANDLE,
+		GetConsoleMode, GetConsoleScreenBufferInfo, GetStdHandle, ScrollConsoleScreenBufferW,
+		SetConsoleCursorPosition, SetConsoleMode, CHAR_INFO, CHAR_INFO_0, CONSOLE_MODE,
+		CONSOLE_SCREEN_BUFFER_INFO, COORD, ENABLE_ECHO_INPUT, ENABLE_LINE_INPUT,
+		ENABLE_PROCESSED_INPUT, ENABLE_VIRTUAL_TERMINAL_PROCESSING, SMALL_RECT, STD_INPUT_HANDLE,
+		STD_OUTPUT_HANDLE,
 	};
-	use windows_sys::Win32::System::SystemInformation::{
-		VerSetConditionMask, VerifyVersionInfoW, OSVERSIONINFOEXW, VER_MAJORVERSION,
-		VER_MINORVERSION, VER_SERVICEPACKMAJOR,
-	};
-	use windows_sys::Win32::System::SystemServices::VER_GREATER_EQUAL;
 
 	#[cfg(feature = "windows-console")]
 	use windows_sys::Win32::System::Console::{
-		FillConsoleOutputAttribute, FillConsoleOutputCharacterW, GetConsoleScreenBufferInfo,
-		ScrollConsoleScreenBufferW, SetConsoleCursorPosition, CHAR_INFO, CHAR_INFO_0,
-		CONSOLE_SCREEN_BUFFER_INFO, COORD, SMALL_RECT,
+		FillConsoleOutputAttribute, FillConsoleOutputCharacterW,
 	};
 
 	fn console_handle() -> Result<HANDLE, Error> {
@@ -1070,7 +1014,6 @@ mod win {
 		}
 	}
 
-	#[cfg(feature = "windows-console")]
 	fn buffer_info(console: HANDLE) -> Result<CONSOLE_SCREEN_BUFFER_INFO, Error> {
 		// SAFETY: `console` is a valid handle obtained from GetStdHandle. `csbi` is
 		// a stack-allocated zeroed struct and we pass a valid mutable pointer to it.
@@ -1083,26 +1026,70 @@ mod win {
 		Ok(csbi)
 	}
 
-	pub(crate) fn vt() -> Result<(), Error> {
+	/// The result of trying to enable VT processing on the console.
+	pub(crate) enum VtSupport {
+		/// stdout is not a console (redirected, captured, detached): there is no
+		/// console mode to manage.
+		NotAConsole,
+		/// The console host rejected the VT processing mode bit.
+		NoVt,
+		/// VT processing is enabled; the original console mode is restored when
+		/// the guard is dropped.
+		Enabled(RestoreConsoleMode),
+	}
+
+	/// Restores the console mode captured before VT processing was enabled.
+	pub(crate) struct RestoreConsoleMode {
+		stdout: HANDLE,
+		mode: CONSOLE_MODE,
+	}
+
+	impl Drop for RestoreConsoleMode {
+		fn drop(&mut self) {
+			// SAFETY: SetConsoleMode takes a console handle and a mode value. The
+			// handle is the one vt() read the mode from (a valid console handle:
+			// GetConsoleMode had succeeded on it), and the mode is the value
+			// GetConsoleMode wrote then, so both are valid here. Failure is
+			// reported by return value, which is ignored: there is nowhere to
+			// surface an error from Drop, and the console may already be gone.
+			unsafe {
+				SetConsoleMode(self.stdout, self.mode);
+			}
+		}
+	}
+
+	pub(crate) fn vt() -> Result<VtSupport, Error> {
 		let stdout = console_handle()?;
 
 		let mut mode = 0;
-		// SAFETY: `stdout` is a valid console handle, `mode` is a valid mutable reference.
+		// SAFETY: `stdout` is a handle from GetStdHandle and `mode` is a valid
+		// mutable reference. GetConsoleMode fails for any non-console handle,
+		// which we treat as "not a console" rather than an error, so that
+		// writing escape sequences to a redirected stdout keeps working.
 		if unsafe { GetConsoleMode(stdout, &mut mode) } == FALSE {
-			return Err(io::Error::last_os_error().into());
+			return Ok(VtSupport::NotAConsole);
 		}
 
-		mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-		// SAFETY: `stdout` is a valid console handle, `mode` is a valid mode value.
-		if unsafe { SetConsoleMode(stdout, mode) } == FALSE {
-			return Err(io::Error::last_os_error().into());
+		// SAFETY: `stdout` is a console handle (GetConsoleMode succeeded on it),
+		// and `mode` is the mode it reported with the VT bit added, so it is a
+		// valid mode value. A host that does not support VT processing rejects
+		// the mode here, which we report as NoVt rather than an error.
+		if unsafe { SetConsoleMode(stdout, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING) } == FALSE {
+			return Ok(VtSupport::NoVt);
 		}
 
-		Ok(())
+		Ok(VtSupport::Enabled(RestoreConsoleMode { stdout, mode }))
+	}
+
+	/// Whether the console host supports VT processing.
+	///
+	/// Probed by briefly enabling the mode: the guard restores the original mode
+	/// as soon as it is dropped, so this has no lasting side-effects.
+	pub(crate) fn vt_supported() -> bool {
+		matches!(vt(), Ok(VtSupport::Enabled(_)))
 	}
 
 	// Ref https://docs.microsoft.com/en-us/windows/console/clearing-the-screen#example-2
-	#[cfg(feature = "windows-console")]
 	pub(crate) fn clear() -> Result<(), Error> {
 		let console = console_handle()?;
 		let csbi = buffer_info(console)?;
@@ -1223,166 +1210,6 @@ mod win {
 
 		Ok(())
 	}
-
-	// I hope someone searches for this one day and gets mad at me for making their life harder.
-	const ABRACADABRA_THRESHOLD: (u8, u8) = (0x0A, 0x00);
-
-	// proper way, requires manifesting
-	#[inline]
-	fn um_verify_version() -> bool {
-		// SAFETY: VerSetConditionMask is a pure function with no pointer arguments.
-		let condition_mask: u64 = unsafe {
-			VerSetConditionMask(
-				VerSetConditionMask(
-					VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL as u8),
-					VER_MINORVERSION,
-					VER_GREATER_EQUAL as u8,
-				),
-				VER_SERVICEPACKMAJOR,
-				VER_GREATER_EQUAL as u8,
-			)
-		};
-
-		let mut osvi = OSVERSIONINFOEXW {
-			dwMinorVersion: ABRACADABRA_THRESHOLD.1 as _,
-			dwMajorVersion: ABRACADABRA_THRESHOLD.0 as _,
-			wServicePackMajor: 0,
-			dwOSVersionInfoSize: size_of::<OSVERSIONINFOEXW>() as u32,
-			dwBuildNumber: 0,
-			dwPlatformId: 0,
-			szCSDVersion: [0; 128],
-			wServicePackMinor: 0,
-			wSuiteMask: 0,
-			wProductType: 0,
-			wReserved: 0,
-		};
-
-		// SAFETY: `osvi` is a properly initialised OSVERSIONINFOEXW with correct
-		// dwOSVersionInfoSize. The condition mask and type mask are valid constants.
-		let ret = unsafe {
-			VerifyVersionInfoW(
-				&mut osvi,
-				VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR,
-				condition_mask,
-			)
-		};
-
-		ret != FALSE
-	}
-
-	// querying the local netserver management api?
-	#[inline]
-	fn um_netserver() -> Result<bool, Error> {
-		// SAFETY: NetServerGetInfo takes a server name (null for the local
-		// machine), an information level, and an out pointer it fills with its
-		// own system-allocated buffer. `buf` is null until the call succeeds,
-		// is read with ptr::read only on success, and is freed with
-		// NetApiBufferFree whenever non-null. All return codes are checked.
-		let mut buf = ptr::null_mut();
-		let ret = match unsafe { NetServerGetInfo(ptr::null_mut(), 101, &mut buf) } {
-			0 => {
-				// SAFETY: the API filled buf with its own allocation on success;
-				// a level-101 buffer holds a SERVER_INFO_101. The value is read
-				// out before the buffer is freed below.
-				let info: SERVER_INFO_101 = unsafe { ptr::read(buf as _) };
-				let version = info.sv101_version_major | MAJOR_VERSION_MASK;
-
-				// IS it using the same magic version number? who the fuck knows. let's hope so.
-				Ok(info.sv101_platform_id == SV_PLATFORM_ID_NT
-					&& version > ABRACADABRA_THRESHOLD.0 as _)
-			}
-			err => Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
-		};
-
-		// free the system-allocated buffer, but only if there is one
-		if !buf.is_null() {
-			// SAFETY: buf is the buffer NetServerGetInfo allocated itself.
-			match unsafe { NetApiBufferFree(buf as _) } {
-				0 => {}
-				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
-			}
-		}
-
-		ret
-	}
-
-	// querying the local workstation management api?
-	#[inline]
-	fn um_workstation() -> Result<bool, Error> {
-		// SAFETY: NetWkstaGetInfo takes a server name (null for the local
-		// machine), an information level, and an out pointer it fills with its
-		// own system-allocated buffer. `buf` is null until the call succeeds,
-		// is read with ptr::read only on success, and is freed with
-		// NetApiBufferFree whenever non-null. All return codes are checked.
-		let mut buf = ptr::null_mut();
-		let ret = match unsafe { NetWkstaGetInfo(ptr::null_mut(), 100, &mut buf) } {
-			0 => {
-				// SAFETY: the API filled buf with its own allocation on success;
-				// a level-100 buffer holds a WKSTA_INFO_100. The value is read
-				// out before the buffer is freed below.
-				let info: WKSTA_INFO_100 = unsafe { ptr::read(buf as _) };
-
-				// IS it using the same magic version number? who the fuck knows. let's hope so.
-				Ok(info.wki100_platform_id == SV_PLATFORM_ID_NT
-					&& info.wki100_ver_major > ABRACADABRA_THRESHOLD.0 as _)
-			}
-			err => Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
-		};
-
-		// free the system-allocated buffer, but only if there is one
-		if !buf.is_null() {
-			// SAFETY: buf is the buffer NetWkstaGetInfo allocated itself.
-			match unsafe { NetApiBufferFree(buf as _) } {
-				0 => {}
-				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
-			}
-		}
-
-		ret
-	}
-
-	// attempt to set the bit, then undo it
-	fn vt_attempt() -> Result<bool, Error> {
-		let stdout = console_handle()?;
-
-		let mut mode = 0;
-		// SAFETY: `stdout` is a valid console handle, `mode` is a valid mutable reference.
-		if unsafe { GetConsoleMode(stdout, &mut mode) } == FALSE {
-			return Err(io::Error::last_os_error().into());
-		}
-
-		let mut support = false;
-
-		let mut newmode = mode;
-		newmode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-		// SAFETY: `stdout` is a valid console handle, `newmode` is a valid mode value.
-		if unsafe { SetConsoleMode(stdout, newmode) } != FALSE {
-			support = true;
-		}
-
-		// reset it to original value, whatever we do
-		// SAFETY: `stdout` is a valid console handle, restoring the original `mode` value.
-		unsafe { SetConsoleMode(stdout, mode) };
-
-		Ok(support)
-	}
-
-	#[inline]
-	pub(crate) fn is_windows_10() -> bool {
-		if um_verify_version() {
-			return true;
-		}
-
-		if um_netserver().unwrap_or(false) {
-			return true;
-		}
-
-		if um_workstation().unwrap_or(false) {
-			return true;
-		}
-
-		vt_attempt().unwrap_or(false)
-	}
 }
 
 #[cfg(not(unix))]
@@ -1404,11 +1231,6 @@ mod unix {
 mod win {
 	use super::Error;
 
-	pub(crate) fn vt() -> Result<(), Error> {
-		Ok(())
-	}
-
-	#[cfg(feature = "windows-console")]
 	pub(crate) fn clear() -> Result<(), Error> {
 		Ok(())
 	}
@@ -1422,8 +1244,7 @@ mod win {
 		Ok(())
 	}
 
-	#[inline]
-	pub(crate) fn is_windows_10() -> bool {
+	pub(crate) fn vt_supported() -> bool {
 		false
 	}
 }
