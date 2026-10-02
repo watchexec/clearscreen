@@ -112,11 +112,6 @@ pub enum ClearScreen {
 	/// - `CSI H` (Cursor Position 0,0), which sets the cursor position to 0,0.
 	/// - `CSI 2J` (Erase Screen), which erases the whole screen.
 	/// - `CSI 3J` (Erase Scrollback), which erases the scrollback (xterm extension).
-	///
-	/// On Windows, VT processing is enabled on the console for the duration of the operation and
-	/// the previous console mode is restored afterwards; if the console host does not support VT
-	/// escapes, the legacy buffer clear that [`WindowsConsoleClear`][ClearScreen::WindowsConsoleClear]
-	/// does is used instead.
 	XtermClear,
 
 	/// Prints the terminal reset sequence as if TERM=xterm.
@@ -141,11 +136,6 @@ pub enum ClearScreen {
 	///   printed on the keys” i.e. numbers and the arithmetic symbols.
 	/// - `CSI ?69l` (Reset Left and Right Margins to the page), which sets the horizontal margins
 	///   to coincide with the page’s margins: nowadays, no margins.
-	///
-	/// On Windows, VT processing is enabled on the console for the duration of the operation and
-	/// the previous console mode is restored afterwards; if the console host does not support VT
-	/// escapes, the legacy buffer clear that [`WindowsConsoleClear`][ClearScreen::WindowsConsoleClear]
-	/// does is used instead.
 	XtermReset,
 
 	/// Calls the command `tput clear`.
@@ -183,10 +173,6 @@ pub enum ClearScreen {
 	///
 	/// This is described here: https://docs.microsoft.com/en-us/windows/console/clearing-the-screen#example-2
 	/// as the equivalent to CMD.EXE's `cls` command.
-	///
-	/// This is also used on Windows as the fallback for the sequence-based methods
-	/// ([`XtermClear`][ClearScreen::XtermClear], [`XtermReset`][ClearScreen::XtermReset]) when the
-	/// console host does not support VT escapes.
 	///
 	/// Does nothing on non-Windows targets.
 	WindowsConsoleClear,
@@ -449,14 +435,9 @@ impl ClearScreen {
 	/// that it will not prevent actions taken via system APIs, such as the Windows, VtCooked, and
 	/// VtWellDone variants do.
 	///
-	/// On Windows, the sequence-based methods enable VT processing on the console for the duration
-	/// of the operation and restore the previous console mode afterwards. If the given writer is
-	/// not the console (such as when capturing the sequences), the console mode is not touched.
-	///
 	/// For normal use, prefer [`clear()`].
 	pub fn clear_to(self, mut w: &mut impl Write) -> Result<(), Error> {
-		// On Windows, try to enable VT processing on the console for the duration of the
-		// operation: the guard restores the previous console mode when it returns.
+		// The guard keeps VT processing enabled until this function returns.
 		#[cfg(windows)]
 		let (no_vt, _vt_guard) = match win::vt() {
 			Ok(win::VtSupport::Enabled(guard)) => (false, Some(guard)),
