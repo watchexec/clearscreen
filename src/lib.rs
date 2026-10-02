@@ -1027,8 +1027,8 @@ mod win {
 
 	use windows_sys::Win32::Foundation::{FALSE, HANDLE, INVALID_HANDLE_VALUE};
 	use windows_sys::Win32::NetworkManagement::NetManagement::{
-		NetApiBufferAllocate, NetApiBufferFree, NetServerGetInfo, NetWkstaGetInfo,
-		MAJOR_VERSION_MASK, SERVER_INFO_101, SV_PLATFORM_ID_NT, WKSTA_INFO_100,
+		NetApiBufferFree, NetServerGetInfo, NetWkstaGetInfo, MAJOR_VERSION_MASK, SERVER_INFO_101,
+		SV_PLATFORM_ID_NT, WKSTA_INFO_100,
 	};
 	use windows_sys::Win32::System::Console::{
 		GetConsoleMode, GetStdHandle, SetConsoleMode, CONSOLE_MODE, ENABLE_ECHO_INPUT,
@@ -1049,8 +1049,10 @@ mod win {
 	};
 
 	fn console_handle() -> Result<HANDLE, Error> {
-		// SAFETY: FFI call with a valid constant handle ID. Failure is indicated by
-		// INVALID_HANDLE_VALUE which is checked immediately.
+		// SAFETY: GetStdHandle takes a constant handle id and no pointers.
+		// Failure is indicated by INVALID_HANDLE_VALUE, checked here; a NULL
+		// return is also possible, and flows through to the later console calls,
+		// which fail cleanly on it.
 		match unsafe { GetStdHandle(STD_OUTPUT_HANDLE) } {
 			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
 			handle => Ok(handle),
@@ -1058,8 +1060,10 @@ mod win {
 	}
 
 	fn console_input_handle() -> Result<HANDLE, Error> {
-		// SAFETY: FFI call with a valid constant handle ID. Failure is indicated by
-		// INVALID_HANDLE_VALUE which is checked immediately.
+		// SAFETY: GetStdHandle takes a constant handle id and no pointers.
+		// Failure is indicated by INVALID_HANDLE_VALUE, checked here; a NULL
+		// return is also possible, and flows through to the later console calls,
+		// which fail cleanly on it.
 		match unsafe { GetStdHandle(STD_INPUT_HANDLE) } {
 			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
 			handle => Ok(handle),
@@ -1269,78 +1273,72 @@ mod win {
 	// querying the local netserver management api?
 	#[inline]
 	fn um_netserver() -> Result<bool, Error> {
-		// SAFETY: NetApiBufferAllocate/Free and NetServerGetInfo are Windows API
-		// calls. `buf` is allocated via NetApiBufferAllocate before use, read via
-		// ptr::read after a successful NetServerGetInfo, and always freed with
-		// NetApiBufferFree. All return codes are checked.
-		unsafe {
-			let mut buf = ptr::null_mut();
-			match NetApiBufferAllocate(
-				u32::try_from(size_of::<SERVER_INFO_101>()).unwrap(),
-				&mut buf,
-			) {
+		// SAFETY: NetServerGetInfo takes a server name (null for the local
+		// machine), an information level, and an out pointer it fills with its
+		// own system-allocated buffer. `buf` is null until the call succeeds,
+		// is read with ptr::read only on success, and is freed with
+		// NetApiBufferFree whenever non-null. All return codes are checked.
+		let mut buf = ptr::null_mut();
+		let ret = match unsafe { NetServerGetInfo(ptr::null_mut(), 101, &mut buf) } {
+			0 => {
+				// SAFETY: the API filled buf with its own allocation on success;
+				// a level-101 buffer holds a SERVER_INFO_101. The value is read
+				// out before the buffer is freed below.
+				let info: SERVER_INFO_101 = unsafe { ptr::read(buf as _) };
+				let version = info.sv101_version_major | MAJOR_VERSION_MASK;
+
+				// IS it using the same magic version number? who the fuck knows. let's hope so.
+				Ok(info.sv101_platform_id == SV_PLATFORM_ID_NT
+					&& version > ABRACADABRA_THRESHOLD.0 as _)
+			}
+			err => Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
+		};
+
+		// free the system-allocated buffer, but only if there is one
+		if !buf.is_null() {
+			// SAFETY: buf is the buffer NetServerGetInfo allocated itself.
+			match unsafe { NetApiBufferFree(buf as _) } {
 				0 => {}
 				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
 			}
-
-			let ret = match NetServerGetInfo(ptr::null_mut(), 101, buf as _) {
-				0 => {
-					let info: SERVER_INFO_101 = ptr::read(buf as _);
-					let version = info.sv101_version_major | MAJOR_VERSION_MASK;
-
-					// IS it using the same magic version number? who the fuck knows. let's hope so.
-					Ok(info.sv101_platform_id == SV_PLATFORM_ID_NT
-						&& version > ABRACADABRA_THRESHOLD.0 as _)
-				}
-				err => Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
-			};
-
-			// always free, even if the netservergetinfo call fails
-			match NetApiBufferFree(buf) {
-				0 => {}
-				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
-			}
-
-			ret
 		}
+
+		ret
 	}
 
 	// querying the local workstation management api?
 	#[inline]
 	fn um_workstation() -> Result<bool, Error> {
-		// SAFETY: NetApiBufferAllocate/Free and NetWkstaGetInfo are Windows API
-		// calls. `buf` is allocated via NetApiBufferAllocate before use, read via
-		// ptr::read after a successful NetWkstaGetInfo, and always freed with
-		// NetApiBufferFree. All return codes are checked.
-		unsafe {
-			let mut buf = ptr::null_mut();
-			match NetApiBufferAllocate(
-				u32::try_from(size_of::<WKSTA_INFO_100>()).unwrap(),
-				&mut buf,
-			) {
+		// SAFETY: NetWkstaGetInfo takes a server name (null for the local
+		// machine), an information level, and an out pointer it fills with its
+		// own system-allocated buffer. `buf` is null until the call succeeds,
+		// is read with ptr::read only on success, and is freed with
+		// NetApiBufferFree whenever non-null. All return codes are checked.
+		let mut buf = ptr::null_mut();
+		let ret = match unsafe { NetWkstaGetInfo(ptr::null_mut(), 100, &mut buf) } {
+			0 => {
+				// SAFETY: the API filled buf with its own allocation on success;
+				// a level-100 buffer holds a WKSTA_INFO_100. The value is read
+				// out before the buffer is freed below.
+				let info: WKSTA_INFO_100 = unsafe { ptr::read(buf as _) };
+
+				// IS it using the same magic version number? who the fuck knows. let's hope so.
+				Ok(info.wki100_platform_id == SV_PLATFORM_ID_NT
+					&& info.wki100_ver_major > ABRACADABRA_THRESHOLD.0 as _)
+			}
+			err => Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
+		};
+
+		// free the system-allocated buffer, but only if there is one
+		if !buf.is_null() {
+			// SAFETY: buf is the buffer NetWkstaGetInfo allocated itself.
+			match unsafe { NetApiBufferFree(buf as _) } {
 				0 => {}
 				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
 			}
-
-			let ret = match NetWkstaGetInfo(ptr::null_mut(), 100, buf as _) {
-				0 => {
-					let info: WKSTA_INFO_100 = ptr::read(buf as _);
-
-					// IS it using the same magic version number? who the fuck knows. let's hope so.
-					Ok(info.wki100_platform_id == SV_PLATFORM_ID_NT
-						&& info.wki100_ver_major > ABRACADABRA_THRESHOLD.0 as _)
-				}
-				err => Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
-			};
-
-			// always free, even if the netservergetinfo call fails
-			match NetApiBufferFree(buf) {
-				0 => {}
-				err => return Err(io::Error::from_raw_os_error(i32::try_from(err).unwrap()).into()),
-			}
-
-			ret
 		}
+
+		ret
 	}
 
 	// attempt to set the bit, then undo it
