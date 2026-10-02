@@ -1049,8 +1049,10 @@ mod win {
 	};
 
 	fn console_handle() -> Result<HANDLE, Error> {
-		// SAFETY: FFI call with a valid constant handle ID. Failure is indicated by
-		// INVALID_HANDLE_VALUE which is checked immediately.
+		// SAFETY: GetStdHandle takes a constant handle id and no pointers.
+		// Failure is indicated by INVALID_HANDLE_VALUE, checked here; a NULL
+		// return is also possible, and flows through to the later console calls,
+		// which fail cleanly on it.
 		match unsafe { GetStdHandle(STD_OUTPUT_HANDLE) } {
 			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
 			handle => Ok(handle),
@@ -1058,8 +1060,10 @@ mod win {
 	}
 
 	fn console_input_handle() -> Result<HANDLE, Error> {
-		// SAFETY: FFI call with a valid constant handle ID. Failure is indicated by
-		// INVALID_HANDLE_VALUE which is checked immediately.
+		// SAFETY: GetStdHandle takes a constant handle id and no pointers.
+		// Failure is indicated by INVALID_HANDLE_VALUE, checked here; a NULL
+		// return is also possible, and flows through to the later console calls,
+		// which fail cleanly on it.
 		match unsafe { GetStdHandle(STD_INPUT_HANDLE) } {
 			INVALID_HANDLE_VALUE => Err(io::Error::last_os_error().into()),
 			handle => Ok(handle),
