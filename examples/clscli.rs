@@ -15,9 +15,6 @@ fn main() -> Result<(), Error> {
 			"TputClear" => ClearScreen::TputClear,
 			"TputReset" => ClearScreen::TputReset,
 			"Cls" => ClearScreen::Cls,
-			"WindowsVt" => ClearScreen::WindowsVt,
-			"WindowsVtClear" => ClearScreen::WindowsVtClear,
-			#[cfg(feature = "windows-console")]
 			"WindowsConsoleClear" => ClearScreen::WindowsConsoleClear,
 			#[cfg(feature = "windows-console")]
 			"WindowsConsoleBlank" => ClearScreen::WindowsConsoleBlank,
@@ -35,7 +32,9 @@ fn main() -> Result<(), Error> {
 
 		Ok(())
 	} else {
-		println!("Usage: cargo run --example clscli -- <variant>\nWhere <variant> is one of the ClearScreen enum variants, same casing, or 'auto'.\nI recommend piping into `hexdump -C` to see what’s happening.");
+		println!(
+			"Usage: cargo run --example clscli -- <variant>\nWhere <variant> is one of the ClearScreen enum variants, same casing, or 'auto'.\nI recommend piping into `hexdump -C` to see what’s happening."
+		);
 		Ok(())
 	}
 }
