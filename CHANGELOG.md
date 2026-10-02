@@ -1,4 +1,14 @@
 
+## v5.0.0 (2026-10-02)
+
+- **Bugfix:** Keep echo on in the cooked and well-done modes (#50) - ([0e5d12a](https://github.com/watchexec/clearscreen/commit/0e5d12ae7167a738ef8015be14faef0af793f2e9))
+- **Deps:** Upgrade nix from 0.31.1 to 0.31.2 (#37) - ([39889ba](https://github.com/watchexec/clearscreen/commit/39889bab8fb2e8a8fad55381de7e600b04125cb5))
+
+### Win
+
+- **Bugfix:** Read the version info the netapi functions actually return (#53) - ([cc70c37](https://github.com/watchexec/clearscreen/commit/cc70c37dde5fbc5e0c72d6fe6f323b1a5f84b529))
+- **Feature:** Probe VT support instead of detecting Windows 10 (#54) - ([38a4392](https://github.com/watchexec/clearscreen/commit/38a4392fc2803fe655c5f8ad2a83205f6daf1c66))
+
 ## v4.0.6 (2026-03-16)
 
 - **Bugfix:** Support Redox OS (#40) - ([48bb58a](https://github.com/watchexec/clearscreen/commit/48bb58ab60277c63726ce563b15a2104db5781ea))
